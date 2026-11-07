@@ -1,22 +1,26 @@
-// main.dart
-
 import 'package:flutter/material.dart';
-import 'core/theme/app_theme.dart';
+import 'package:flutter/services.dart';
+import 'package:storey_app/core/app/app.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/config/env.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Env.load();
+
+  await Supabase.initialize(
+    url: Env.supabaseUrl,
+    publishableKey: Env.supabasePublishableKey,
+  );
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
+
   runApp(const StoreyApp());
-}
-
-class StoreyApp extends StatelessWidget {
-  const StoreyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Storey',
-      theme: AppTheme.lightTheme,
-      home: const Scaffold(),
-    );
-  }
 }
