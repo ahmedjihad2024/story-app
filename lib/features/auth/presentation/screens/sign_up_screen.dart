@@ -32,6 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         backgroundColor: ColorM.success,
       ),
     );
+    Navigator.pushReplacementNamed(context, Routes.home);
   }
 
   void _navigateToSignIn() {

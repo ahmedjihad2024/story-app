@@ -12,7 +12,7 @@ class StoreyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Storey',
       theme: ThemeManager.lightTheme(context),
-      initialRoute: Routes.signUp,
+      initialRoute: Routes.home,
       onGenerateRoute: AppRouter.generateRoute,
     );
   }

@@ -33,6 +33,7 @@ class _SignInScreenState extends State<SignInScreen> {
         backgroundColor: ColorM.success,
       ),
     );
+    Navigator.pushReplacementNamed(context, Routes.home);
   }
 
   void _handleForgotPassword() {
