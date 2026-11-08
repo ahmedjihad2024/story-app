@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/color_manager.dart';
 import '../../../../core/theme/fonts_manager.dart';
+import '../riverpod/sign_in_controller.dart';
 
-class RememberMeAndForgotPasswordWidget extends StatelessWidget {
-  final bool rememberMe;
-  final ValueChanged<bool?> onRememberMeChanged;
+class RememberMeAndForgotPasswordWidget extends ConsumerWidget {
   final VoidCallback onForgotPassword;
 
   const RememberMeAndForgotPasswordWidget({
     super.key,
-    required this.rememberMe,
-    required this.onRememberMeChanged,
     required this.onForgotPassword,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final rememberMe = ref.watch(
+      signInControllerProvider.select((s) => s.rememberMe),
+    );
+    final notifier = ref.read(signInControllerProvider.notifier);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -27,7 +30,7 @@ class RememberMeAndForgotPasswordWidget extends StatelessWidget {
               height: 20,
               child: Checkbox(
                 value: rememberMe,
-                onChanged: onRememberMeChanged,
+                onChanged: (val) => notifier.toggleRememberMe(val ?? false),
                 activeColor: ColorM.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
@@ -40,7 +43,7 @@ class RememberMeAndForgotPasswordWidget extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             GestureDetector(
-              onTap: () => onRememberMeChanged(!rememberMe),
+              onTap: () => notifier.toggleRememberMe(!rememberMe),
               child: Text(
                 'Remember me',
                 style: TextStyle(

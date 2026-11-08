@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:storey_app/core/app/app.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'core/di/dependency_injection.dart';
+import 'core/app/app.dart';
 import 'core/config/env.dart';
 
 void main() async {
@@ -14,6 +16,8 @@ void main() async {
     publishableKey: Env.supabasePublishableKey,
   );
 
+  await DI.init();
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -22,5 +26,10 @@ void main() async {
     ),
   );
 
-  runApp(const StoreyApp());
+  runApp(
+    UncontrolledProviderScope(
+      container: DI.container,
+      child: const StoreyApp(),
+    ),
+  );
 }

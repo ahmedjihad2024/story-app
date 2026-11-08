@@ -1,38 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/extensions/navigation_extension.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/color_manager.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
 import '../../../../core/widgets/forms/app_text_form_field.dart';
+import '../riverpod/sign_in_controller.dart';
 import 'remember_me_and_forgot_password_widget.dart';
 
-class SignInFormWidget extends StatefulWidget {
-  final void Function({
-    required String email,
-    required String password,
-    required bool rememberMe,
-  }) onSignIn;
-
+class SignInFormWidget extends ConsumerStatefulWidget {
   final VoidCallback onForgotPassword;
-  final bool isLoading;
 
   const SignInFormWidget({
     super.key,
-    required this.onSignIn,
     required this.onForgotPassword,
-    this.isLoading = false,
   });
 
   @override
-  State<SignInFormWidget> createState() => _SignInFormWidgetState();
+  ConsumerState<SignInFormWidget> createState() => _SignInFormWidgetState();
 }
 
-class _SignInFormWidgetState extends State<SignInFormWidget> {
+class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  bool _rememberMe = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -44,7 +36,11 @@ class _SignInFormWidgetState extends State<SignInFormWidget> {
   String? _validateEmail(String? value) {
     final email = value?.trim() ?? '';
     if (email.isEmpty) {
-      return 'Please enter your username or email';
+      return 'Please enter your email';
+    }
+    final emailPattern = RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$');
+    if (!emailPattern.hasMatch(email)) {
+      return 'Please enter a valid email address';
     }
     return null;
   }
@@ -59,36 +55,44 @@ class _SignInFormWidgetState extends State<SignInFormWidget> {
     return null;
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     FocusScope.of(context).unfocus();
 
     final isValid = _formKey.currentState?.validate() ?? false;
-    if (!isValid) {
-      setState(() {
-        _errorMessage = 'Please complete all required fields.';
-      });
-      return;
+    if (!isValid) return;
+
+    final success = await ref.read(signInControllerProvider.notifier).signIn(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Successfully signed in!'),
+          backgroundColor: ColorM.success,
+        ),
+      );
+      context.goNamed(Routes.home);
     }
-
-    setState(() {
-      _errorMessage = null;
-    });
-
-    widget.onSignIn(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      rememberMe: _rememberMe,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final errorMessage = ref.watch(
+      signInControllerProvider.select((s) => s.errorMessage),
+    );
+    final isLoading = ref.watch(
+      signInControllerProvider.select((s) => s.reqState.isLoading),
+    );
+    final notifier = ref.read(signInControllerProvider.notifier);
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_errorMessage != null) ...[
+          if (errorMessage != null) ...[
             Container(
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.symmetric(
@@ -113,7 +117,7 @@ class _SignInFormWidgetState extends State<SignInFormWidget> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      _errorMessage!,
+                      errorMessage,
                       style: const TextStyle(
                         color: ColorM.error,
                         fontSize: 13,
@@ -129,18 +133,17 @@ class _SignInFormWidgetState extends State<SignInFormWidget> {
                     ),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                    onPressed: () {
-                      setState(() => _errorMessage = null);
-                    },
+                    onPressed: notifier.clearError,
                   ),
                 ],
               ),
             ),
           ],
           AppTextFormField(
-            label: 'Username or Email',
-            hintText: 'emilys',
+            label: 'Email',
+            hintText: 'alex@example.com',
             controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             validator: _validateEmail,
           ),
@@ -156,16 +159,12 @@ class _SignInFormWidgetState extends State<SignInFormWidget> {
           ),
           const SizedBox(height: 16),
           RememberMeAndForgotPasswordWidget(
-            rememberMe: _rememberMe,
-            onRememberMeChanged: (val) {
-              setState(() => _rememberMe = val ?? false);
-            },
             onForgotPassword: widget.onForgotPassword,
           ),
           const SizedBox(height: 24),
           PrimaryButton(
             title: 'Sign In',
-            isLoading: widget.isLoading,
+            isLoading: isLoading,
             onPressed: _submitForm,
           ),
         ],
@@ -173,4 +172,3 @@ class _SignInFormWidgetState extends State<SignInFormWidget> {
     );
   }
 }
-

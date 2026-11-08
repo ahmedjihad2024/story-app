@@ -1,30 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/extensions/navigation_extension.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/color_manager.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
 import '../../../../core/widgets/forms/app_text_form_field.dart';
+import '../riverpod/sign_up_controller.dart';
 import 'sign_up_name_row_widget.dart';
 
-class SignUpFormWidget extends StatefulWidget {
-  final void Function({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String password,
-  }) onSignUp;
-
-  final bool isLoading;
-
-  const SignUpFormWidget({
-    super.key,
-    required this.onSignUp,
-    this.isLoading = false,
-  });
+class SignUpFormWidget extends ConsumerStatefulWidget {
+  const SignUpFormWidget({super.key});
 
   @override
-  State<SignUpFormWidget> createState() => _SignUpFormWidgetState();
+  ConsumerState<SignUpFormWidget> createState() => _SignUpFormWidgetState();
 }
 
-class _SignUpFormWidgetState extends State<SignUpFormWidget> {
+class _SignUpFormWidgetState extends ConsumerState<SignUpFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _firstNameController = TextEditingController();
@@ -33,8 +24,6 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -73,8 +62,8 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
     if (value == null || value.isEmpty) {
       return 'Password is required';
     }
-    if (value.length < 8) {
-      return 'Password must be at least 8 characters';
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters';
     }
     return null;
   }
@@ -89,44 +78,46 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
     return null;
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     FocusScope.of(context).unfocus();
 
-    if (_passwordController.text != _confirmPasswordController.text) {
-      setState(() {
-        _errorMessage = 'Passwords do not match. Please verify.';
-      });
-      return;
-    }
-
     final isValid = _formKey.currentState?.validate() ?? false;
-    if (!isValid) {
-      setState(() {
-        _errorMessage = 'Please complete all required fields correctly.';
-      });
-      return;
+    if (!isValid) return;
+
+    final success = await ref.read(signUpControllerProvider.notifier).signUp(
+          firstName: _firstNameController.text,
+          lastName: _lastNameController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully!'),
+          backgroundColor: ColorM.success,
+        ),
+      );
+      context.goNamed(Routes.home);
     }
-
-    setState(() {
-      _errorMessage = null;
-    });
-
-    widget.onSignUp(
-      firstName: _firstNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final errorMessage = ref.watch(
+      signUpControllerProvider.select((s) => s.errorMessage),
+    );
+    final isLoading = ref.watch(
+      signUpControllerProvider.select((s) => s.reqState.isLoading),
+    );
+    final notifier = ref.read(signUpControllerProvider.notifier);
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_errorMessage != null) ...[
+          if (errorMessage != null) ...[
             Container(
               margin: const EdgeInsets.only(bottom: 20),
               padding: const EdgeInsets.symmetric(
@@ -151,7 +142,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      _errorMessage!,
+                      errorMessage,
                       style: const TextStyle(
                         color: ColorM.error,
                         fontSize: 13,
@@ -167,9 +158,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
                     ),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                    onPressed: () {
-                      setState(() => _errorMessage = null);
-                    },
+                    onPressed: notifier.clearError,
                   ),
                 ],
               ),
@@ -212,7 +201,7 @@ class _SignUpFormWidgetState extends State<SignUpFormWidget> {
           const SizedBox(height: 24),
           PrimaryButton(
             title: 'Create Account',
-            isLoading: widget.isLoading,
+            isLoading: isLoading,
             onPressed: _submitForm,
           ),
         ],

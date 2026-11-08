@@ -1,6 +1,10 @@
-abstract final class Routes {
-  static const String signUp = '/signUp';
-  static const String signIn = '/signIn';
-  static const String home = '/home';
-}
+enum Routes {
+  signIn('sign-in'),
+  signUp('sign-up'),
+  home('home');
 
+  final String name;
+  const Routes(this.name);
+
+  String get path => '/$name';
+}

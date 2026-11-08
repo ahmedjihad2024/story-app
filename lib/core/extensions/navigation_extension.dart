@@ -1,65 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../routing/routes.dart';
 
 extension NavigationExtension on BuildContext {
-  Future<T?> pushNamed<T extends Object?>(
-    String routeName, {
-    Object? arguments,
-  }) {
-    return Navigator.of(this).pushNamed<T>(
-      routeName,
-      arguments: arguments,
-    );
+  Future<T?> pushNamed<T>(Routes route, {Object? arguments}) =>
+      GoRouter.of(this).pushNamed<T>(route.name, extra: arguments);
+
+  void goNamed(Routes route, {Object? arguments}) =>
+      GoRouter.of(this).goNamed(route.name, extra: arguments);
+
+  void go(String location, {Object? extra}) =>
+      GoRouter.of(this).go(location, extra: extra);
+
+  Future<T?> pushReplacementNamed<T>(Routes route, {Object? arguments}) =>
+      GoRouter.of(this).pushReplacementNamed<T>(route.name, extra: arguments);
+
+  void pop<T>([T? result]) => GoRouter.of(this).pop<T>(result);
+
+  void maybePop<T>([T? result]) {
+    final router = GoRouter.of(this);
+    if (router.canPop()) router.pop<T>(result);
   }
 
-  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(
-    String routeName, {
-    TO? result,
-    Object? arguments,
-  }) {
-    return Navigator.of(this).pushReplacementNamed<T, TO>(
-      routeName,
-      result: result,
-      arguments: arguments,
-    );
-  }
+  void popUntilNamed(Routes route) => GoRouter.of(this).goNamed(route.name);
 
-  Future<T?> pushNamedAndRemoveUntil<T extends Object?>(
-    String newRouteName,
-    RoutePredicate predicate, {
-    Object? arguments,
-  }) {
-    return Navigator.of(this).pushNamedAndRemoveUntil<T>(
-      newRouteName,
-      predicate,
-      arguments: arguments,
-    );
-  }
-
-  Future<T?> push<T extends Object?>(Widget page) {
-    return Navigator.of(this).push<T>(
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
-
-  Future<T?> pushReplacement<T extends Object?, TO extends Object?>(
-    Widget page, {
-    TO? result,
-  }) {
-    return Navigator.of(this).pushReplacement<T, TO>(
-      MaterialPageRoute(builder: (_) => page),
-      result: result,
-    );
-  }
-
-  void pop<T extends Object?>([T? result]) {
-    Navigator.of(this).pop<T>(result);
-  }
-
-  void maybePop<T extends Object?>([T? result]) {
-    Navigator.of(this).maybePop<T>(result);
-  }
-
-  bool canPop() {
-    return Navigator.of(this).canPop();
-  }
+  bool get canPop => GoRouter.of(this).canPop();
 }
