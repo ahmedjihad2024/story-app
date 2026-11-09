@@ -11,6 +11,11 @@ import '../../features/home/data/api/home_api_services.dart';
 import '../../features/home/data/repository/home_repository_impl.dart';
 import '../../features/home/domain/repository/home_repository.dart';
 import '../../features/home/domain/usecase/get_home_data_usecase.dart';
+import '../../features/products/data/api/products_api_service.dart';
+import '../../features/products/data/data_source/products_remote_data_source.dart';
+import '../../features/products/data/repository/products_repository_impl.dart';
+import '../../features/products/domain/repository/products_repository.dart';
+import '../../features/products/domain/usecase/get_products_usecase.dart';
 
 class DI {
   static late final ProviderContainer container;
@@ -61,6 +66,24 @@ class DI {
   // --- Home UseCases ---
   static final getHomeDataUseCaseProvider = Provider<GetHomeDataUseCase>(
     (ref) => GetHomeDataUseCase(ref.read(homeRepositoryProvider)),
+  );
+
+  // --- Products Feature ---
+  static final productsApiServiceProvider = Provider<ProductsApiService>(
+    (ref) => ProductsApiServiceImpl(ref.read(supabaseClientProvider)),
+  );
+
+  static final productsRemoteDataSourceProvider =
+      Provider<ProductsRemoteDataSource>(
+    (ref) => ProductsRemoteDataSourceImpl(ref.read(productsApiServiceProvider)),
+  );
+
+  static final productsRepositoryProvider = Provider<ProductsRepository>(
+    (ref) => ProductsRepositoryImpl(ref.read(productsRemoteDataSourceProvider)),
+  );
+
+  static final getProductsUseCaseProvider = Provider<GetProductsUseCase>(
+    (ref) => GetProductsUseCase(ref.read(productsRepositoryProvider)),
   );
 
   /// Call this in your main.dart before runApp()

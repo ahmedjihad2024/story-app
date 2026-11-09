@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/extensions/navigation_extension.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/widgets/refresh/customized_smart_refresh.dart';
 import '../../../../core/widgets/state/state_render.dart';
+import '../../../products/domain/model/product_filter_type.dart';
+import '../../../products/presentation/screens/products_screen.dart';
 import '../../domain/model/category_model.dart';
 import '../../domain/model/home_model.dart';
 import '../../domain/model/product_model.dart';
@@ -51,10 +55,32 @@ class _HomeTabState extends ConsumerState<HomeTab>
   }
 
   void _handleCategorySelected(CategoryModel category) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Category: ${category.name}'),
-        duration: const Duration(seconds: 1),
+    context.pushNamed(
+      Routes.products,
+      arguments: ProductsScreenArgs(
+        filterType: ProductFilterType.category,
+        categoryId: category.id,
+        title: category.name,
+      ),
+    );
+  }
+
+  void _handleFeaturedSeeAll() {
+    context.pushNamed(
+      Routes.products,
+      arguments: const ProductsScreenArgs(
+        filterType: ProductFilterType.featured,
+        title: 'Featured Products',
+      ),
+    );
+  }
+
+  void _handlePopularSeeAll() {
+    context.pushNamed(
+      Routes.products,
+      arguments: const ProductsScreenArgs(
+        filterType: ProductFilterType.popular,
+        title: 'Popular Products',
       ),
     );
   }
@@ -105,6 +131,8 @@ class _HomeTabState extends ConsumerState<HomeTab>
         refreshController: _refreshController,
         onRefresh: _handleRefresh,
         onCategorySelected: _handleCategorySelected,
+        onFeaturedSeeAll: _handleFeaturedSeeAll,
+        onPopularSeeAll: _handlePopularSeeAll,
         onShopNowPressed: _handleShopNowPressed,
         onAddToCart: _handleAddToCart,
       ),
@@ -154,6 +182,8 @@ class _HomeContent extends StatelessWidget {
     required this.refreshController,
     required this.onRefresh,
     required this.onCategorySelected,
+    required this.onFeaturedSeeAll,
+    required this.onPopularSeeAll,
     required this.onShopNowPressed,
     required this.onAddToCart,
   });
@@ -162,6 +192,8 @@ class _HomeContent extends StatelessWidget {
   final RefreshController refreshController;
   final Future<void> Function() onRefresh;
   final void Function(CategoryModel) onCategorySelected;
+  final VoidCallback onFeaturedSeeAll;
+  final VoidCallback onPopularSeeAll;
   final void Function(PromoBannerModel) onShopNowPressed;
   final void Function(ProductModel) onAddToCart;
 
@@ -214,7 +246,7 @@ class _HomeContent extends StatelessWidget {
                   products: data.featuredProducts,
                   onWishlistToggle: (_) {},
                   onProductTap: (_) {},
-                  onSeeAllPressed: () {},
+                  onSeeAllPressed: onFeaturedSeeAll,
                 ),
               const SizedBox(height: 20),
               if (data.popularProducts.isNotEmpty)
@@ -223,7 +255,7 @@ class _HomeContent extends StatelessWidget {
                   onWishlistToggle: (_) {},
                   onAddToCart: onAddToCart,
                   onProductTap: (_) {},
-                  onSeeAllPressed: () {},
+                  onSeeAllPressed: onPopularSeeAll,
                 ),
               const SizedBox(height: 100),
             ]),

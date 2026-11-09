@@ -27,6 +27,7 @@ class FeaturedSectionWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: HomeSectionHeaderWidget(
             title: 'Featured',
+            onActionPressed: onSeeAllPressed,
           ),
         ),
         const SizedBox(height: 12),

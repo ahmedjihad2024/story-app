@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/sign_in_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
+import '../../features/products/domain/model/product_filter_type.dart';
+import '../../features/products/presentation/screens/products_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import 'routes.dart';
 
@@ -34,6 +36,26 @@ final GoRouter appRouter = GoRouter(
       name: Routes.home.name,
       path: Routes.home.path,
       builder: (context, state) => const MainLayoutScreen(),
+    ),
+    GoRoute(
+      name: Routes.products.name,
+      path: Routes.products.path,
+      builder: (context, state) {
+        if (state.extra is ProductsScreenArgs) {
+          final args = state.extra as ProductsScreenArgs;
+          return ProductsScreen(
+            filterType: args.filterType,
+            categoryId: args.categoryId,
+            title: args.title,
+          );
+        }
+        final extra = state.extra as Map<String, dynamic>;
+        return ProductsScreen(
+          filterType: extra['filterType'] as ProductFilterType,
+          categoryId: extra['categoryId'] as String?,
+          title: extra['title'] as String,
+        );
+      },
     ),
   ],
 );
