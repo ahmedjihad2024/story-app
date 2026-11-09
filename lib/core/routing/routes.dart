@@ -3,7 +3,9 @@ enum Routes {
   signIn('sign-in'),
   signUp('sign-up'),
   home('home'),
-  products('products');
+  products('products'),
+  search('search'),
+  filter('filter');
 
   final String name;
   const Routes(this.name);

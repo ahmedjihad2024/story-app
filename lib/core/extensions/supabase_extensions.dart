@@ -5,7 +5,7 @@ extension RowsParsing on Object? {
     final results = <T>[];
     for (final item in list) {
       if (item is Map) {
-        results.add(from(item.cast<String, dynamic>()));
+        results.add(from(Map<String, dynamic>.from(item)));
       }
     }
     return results;

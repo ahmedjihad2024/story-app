@@ -54,6 +54,10 @@ class _HomeTabState extends ConsumerState<HomeTab>
     }
   }
 
+  void _handleSearchTap() {
+    context.pushNamed(Routes.search);
+  }
+
   void _handleCategorySelected(CategoryModel category) {
     context.pushNamed(
       Routes.products,
@@ -130,6 +134,7 @@ class _HomeTabState extends ConsumerState<HomeTab>
         data: homeState.data!,
         refreshController: _refreshController,
         onRefresh: _handleRefresh,
+        onSearchTap: _handleSearchTap,
         onCategorySelected: _handleCategorySelected,
         onFeaturedSeeAll: _handleFeaturedSeeAll,
         onPopularSeeAll: _handlePopularSeeAll,
@@ -181,6 +186,7 @@ class _HomeContent extends StatelessWidget {
     required this.data,
     required this.refreshController,
     required this.onRefresh,
+    required this.onSearchTap,
     required this.onCategorySelected,
     required this.onFeaturedSeeAll,
     required this.onPopularSeeAll,
@@ -191,6 +197,7 @@ class _HomeContent extends StatelessWidget {
   final HomeModel data;
   final RefreshController refreshController;
   final Future<void> Function() onRefresh;
+  final VoidCallback onSearchTap;
   final void Function(CategoryModel) onCategorySelected;
   final VoidCallback onFeaturedSeeAll;
   final VoidCallback onPopularSeeAll;
@@ -226,7 +233,10 @@ class _HomeContent extends StatelessWidget {
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: HomeSearchBarWidget(onChanged: (_) {}),
+                child: HomeSearchBarWidget(
+                  readOnly: true,
+                  onTap: onSearchTap,
+                ),
               ),
               const SizedBox(height: 20),
               if (data.categories.isNotEmpty)

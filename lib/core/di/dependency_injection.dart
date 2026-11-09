@@ -16,6 +16,12 @@ import '../../features/products/data/data_source/products_remote_data_source.dar
 import '../../features/products/data/repository/products_repository_impl.dart';
 import '../../features/products/domain/repository/products_repository.dart';
 import '../../features/products/domain/usecase/get_products_usecase.dart';
+import '../../features/search/data/api/search_api_service.dart';
+import '../../features/search/data/data_source/search_remote_data_source.dart';
+import '../../features/search/data/repository/search_repository_impl.dart';
+import '../../features/search/domain/repository/search_repository.dart';
+import '../../features/search/domain/usecase/get_filter_categories_usecase.dart';
+import '../../features/search/domain/usecase/search_products_usecase.dart';
 
 class DI {
   static late final ProviderContainer container;
@@ -84,6 +90,29 @@ class DI {
 
   static final getProductsUseCaseProvider = Provider<GetProductsUseCase>(
     (ref) => GetProductsUseCase(ref.read(productsRepositoryProvider)),
+  );
+
+  // --- Search Feature ---
+  static final searchApiServiceProvider = Provider<SearchApiService>(
+    (ref) => SearchApiServiceImpl(ref.read(supabaseClientProvider)),
+  );
+
+  static final searchRemoteDataSourceProvider =
+      Provider<SearchRemoteDataSource>(
+    (ref) => SearchRemoteDataSourceImpl(ref.read(searchApiServiceProvider)),
+  );
+
+  static final searchRepositoryProvider = Provider<SearchRepository>(
+    (ref) => SearchRepositoryImpl(ref.read(searchRemoteDataSourceProvider)),
+  );
+
+  static final searchProductsUseCaseProvider = Provider<SearchProductsUseCase>(
+    (ref) => SearchProductsUseCase(ref.read(searchRepositoryProvider)),
+  );
+
+  static final getFilterCategoriesUseCaseProvider =
+      Provider<GetFilterCategoriesUseCase>(
+    (ref) => GetFilterCategoriesUseCase(ref.read(searchRepositoryProvider)),
   );
 
   /// Call this in your main.dart before runApp()
