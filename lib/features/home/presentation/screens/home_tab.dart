@@ -98,6 +98,10 @@ class _HomeTabState extends ConsumerState<HomeTab>
     );
   }
 
+  void _handleProductTapped(ProductModel product) {
+    context.pushNamed(Routes.productDetails, arguments: product);
+  }
+
   void _handleAddToCart(ProductModel product) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -139,6 +143,7 @@ class _HomeTabState extends ConsumerState<HomeTab>
         onFeaturedSeeAll: _handleFeaturedSeeAll,
         onPopularSeeAll: _handlePopularSeeAll,
         onShopNowPressed: _handleShopNowPressed,
+        onProductTap: _handleProductTapped,
         onAddToCart: _handleAddToCart,
       ),
     );
@@ -191,6 +196,7 @@ class _HomeContent extends StatelessWidget {
     required this.onFeaturedSeeAll,
     required this.onPopularSeeAll,
     required this.onShopNowPressed,
+    required this.onProductTap,
     required this.onAddToCart,
   });
 
@@ -202,6 +208,7 @@ class _HomeContent extends StatelessWidget {
   final VoidCallback onFeaturedSeeAll;
   final VoidCallback onPopularSeeAll;
   final void Function(PromoBannerModel) onShopNowPressed;
+  final void Function(ProductModel) onProductTap;
   final void Function(ProductModel) onAddToCart;
 
   @override
@@ -255,7 +262,7 @@ class _HomeContent extends StatelessWidget {
                 FeaturedSectionWidget(
                   products: data.featuredProducts,
                   onWishlistToggle: (_) {},
-                  onProductTap: (_) {},
+                  onProductTap: onProductTap,
                   onSeeAllPressed: onFeaturedSeeAll,
                 ),
               const SizedBox(height: 20),
@@ -264,7 +271,7 @@ class _HomeContent extends StatelessWidget {
                   products: data.popularProducts,
                   onWishlistToggle: (_) {},
                   onAddToCart: onAddToCart,
-                  onProductTap: (_) {},
+                  onProductTap: onProductTap,
                   onSeeAllPressed: onPopularSeeAll,
                 ),
               const SizedBox(height: 100),

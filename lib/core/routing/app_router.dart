@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/sign_in_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
+import '../../features/home/domain/model/product_model.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
+import '../../features/product_details/presentation/screens/product_details_screen.dart';
 import '../../features/products/domain/model/product_filter_type.dart';
 import '../../features/products/presentation/screens/products_screen.dart';
 import '../../features/search/domain/model/search_filter_model.dart';
@@ -80,6 +82,14 @@ final GoRouter appRouter = GoRouter(
             ? state.extra as SearchFilterModel
             : const SearchFilterModel();
         return FilterScreen(initialFilter: initialFilter);
+      },
+    ),
+    GoRoute(
+      name: Routes.productDetails.name,
+      path: Routes.productDetails.path,
+      builder: (context, state) {
+        final product = state.extra as ProductModel;
+        return ProductDetailsScreen(product: product);
       },
     ),
   ],

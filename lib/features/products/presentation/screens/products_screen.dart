@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/extensions/navigation_extension.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/color_manager.dart';
 import '../../../../core/widgets/refresh/customized_smart_refresh.dart';
 import '../../../../core/widgets/state/state_render.dart';
@@ -221,7 +222,10 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
               final product = state.products[index];
               return ProductGridCardWidget(
                 product: product,
-                onTap: () {},
+                onTap: () => context.pushNamed(
+                  Routes.productDetails,
+                  arguments: product,
+                ),
                 onWishlistToggle: () {},
                 onAddToCart: () {
                   ScaffoldMessenger.of(context).showSnackBar(

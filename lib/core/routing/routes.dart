@@ -5,7 +5,8 @@ enum Routes {
   home('home'),
   products('products'),
   search('search'),
-  filter('filter');
+  filter('filter'),
+  productDetails('product-details');
 
   final String name;
   const Routes(this.name);
