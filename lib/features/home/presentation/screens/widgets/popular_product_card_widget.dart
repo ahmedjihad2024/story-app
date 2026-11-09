@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/theme/color_manager.dart';
-import '../../../../core/theme/fonts_manager.dart';
-import '../../domain/model/product_model.dart';
+import '../../../../../core/theme/color_manager.dart';
+import '../../../../../core/theme/fonts_manager.dart';
+import '../../../../../core/widgets/images/app_cached_image.dart';
+import '../../../domain/model/product_model.dart';
 
-class FeaturedProductCardWidget extends StatelessWidget {
+class PopularProductCardWidget extends StatelessWidget {
   final ProductModel product;
   final VoidCallback? onTap;
   final VoidCallback? onWishlistToggle;
+  final VoidCallback? onAddToCart;
 
-  const FeaturedProductCardWidget({
+  const PopularProductCardWidget({
     super.key,
     required this.product,
     this.onTap,
     this.onWishlistToggle,
+    this.onAddToCart,
   });
 
   @override
@@ -22,8 +25,6 @@ class FeaturedProductCardWidget extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 160,
-        height: 250,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: ColorM.white,
@@ -91,14 +92,10 @@ class FeaturedProductCardWidget extends StatelessWidget {
             // Product image
             Expanded(
               child: Center(
-                child: Image.asset(
-                  product.imageAsset,
+                child: AppCachedImage(
+                  imageUrl: product.imageUrl,
                   fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.devices,
-                    size: 48,
-                    color: ColorM.border,
-                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
@@ -114,16 +111,20 @@ class FeaturedProductCardWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            // Title
-            Text(
-              product.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 12,
-                fontWeight: FontWeightM.semiBold,
-                color: Color(0xFF0F172A),
+            // Title (2 lines max for consistency)
+            SizedBox(
+              height: 32,
+              child: Text(
+                product.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  fontWeight: FontWeightM.semiBold,
+                  color: Color(0xFF0F172A),
+                  height: 1.25,
+                ),
               ),
             ),
             const SizedBox(height: 4),
@@ -174,6 +175,40 @@ class FeaturedProductCardWidget extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 10),
+            // Add to Cart Button
+            GestureDetector(
+              onTap: onAddToCart,
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                height: 32,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/svg/cart_add.svg',
+                      width: 14,
+                      height: 14,
+                    ),
+                    const SizedBox(width: 6),
+                    const Text(
+                      'Add to Cart',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        fontWeight: FontWeightM.semiBold,
+                        color: ColorM.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

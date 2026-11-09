@@ -7,6 +7,9 @@ class ProductModel {
   final double originalPrice;
   final String discountPercentage;
   final String imageAsset;
+  final String? imageUrl;
+  final String? description;
+  final int? salesCount;
   final bool isWishlisted;
 
   const ProductModel({
@@ -18,6 +21,9 @@ class ProductModel {
     required this.originalPrice,
     required this.discountPercentage,
     required this.imageAsset,
+    this.imageUrl,
+    this.description,
+    this.salesCount,
     this.isWishlisted = false,
   });
 
@@ -30,6 +36,9 @@ class ProductModel {
     double? originalPrice,
     String? discountPercentage,
     String? imageAsset,
+    String? imageUrl,
+    String? description,
+    int? salesCount,
     bool? isWishlisted,
   }) {
     return ProductModel(
@@ -41,6 +50,9 @@ class ProductModel {
       originalPrice: originalPrice ?? this.originalPrice,
       discountPercentage: discountPercentage ?? this.discountPercentage,
       imageAsset: imageAsset ?? this.imageAsset,
+      imageUrl: imageUrl ?? this.imageUrl,
+      description: description ?? this.description,
+      salesCount: salesCount ?? this.salesCount,
       isWishlisted: isWishlisted ?? this.isWishlisted,
     );
   }
@@ -101,4 +113,3 @@ class ProductModel {
     ),
   ];
 }
-

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/color_manager.dart';
-import '../../../../core/theme/fonts_manager.dart';
+import '../../../../../core/theme/color_manager.dart';
+import '../../../../../core/theme/fonts_manager.dart';
 
 class HomeSectionHeaderWidget extends StatelessWidget {
   final String title;
@@ -30,7 +30,7 @@ class HomeSectionHeaderWidget extends StatelessWidget {
             height: 28 / 18,
           ),
         ),
-        GestureDetector(
+        if(onActionPressed != null) GestureDetector(
           onTap: onActionPressed,
           behavior: HitTestBehavior.opaque,
           child: Padding(

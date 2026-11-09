@@ -6,7 +6,6 @@ import '../../../../core/theme/color_manager.dart';
 import '../../../../core/widgets/buttons/primary_button.dart';
 import '../../../../core/widgets/forms/app_text_form_field.dart';
 import '../riverpod/sign_in_controller.dart';
-import 'remember_me_and_forgot_password_widget.dart';
 
 class SignInFormWidget extends ConsumerStatefulWidget {
   final VoidCallback onForgotPassword;
@@ -157,10 +156,10 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
             validator: _validatePassword,
             onFieldSubmitted: (_) => _submitForm(),
           ),
-          const SizedBox(height: 16),
-          RememberMeAndForgotPasswordWidget(
-            onForgotPassword: widget.onForgotPassword,
-          ),
+          // const SizedBox(height: 16),
+          // RememberMeAndForgotPasswordWidget(
+          //   onForgotPassword: widget.onForgotPassword,
+          // ),
           const SizedBox(height: 24),
           PrimaryButton(
             title: 'Sign In',

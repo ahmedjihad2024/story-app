@@ -2,11 +2,13 @@ class CategoryModel {
   final String id;
   final String name;
   final String iconAsset;
+  final String? imageUrl;
 
   const CategoryModel({
     required this.id,
     required this.name,
     required this.iconAsset,
+    this.imageUrl,
   });
 
   static const List<CategoryModel> sampleCategories = [
@@ -32,4 +34,3 @@ class CategoryModel {
     ),
   ];
 }
-

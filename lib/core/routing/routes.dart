@@ -1,4 +1,5 @@
 enum Routes {
+  splash('splash'),
   signIn('sign-in'),
   signUp('sign-up'),
   home('home');
@@ -6,5 +7,5 @@ enum Routes {
   final String name;
   const Routes(this.name);
 
-  String get path => '/$name';
+  String get path => name == 'splash' ? '/' : '/$name';
 }

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import '../../domain/model/product_model.dart';
-import 'featured_product_card_widget.dart';
+import '../../../domain/model/product_model.dart';
 import 'home_section_header_widget.dart';
+import 'popular_product_card_widget.dart';
 
-class FeaturedSectionWidget extends StatelessWidget {
+class PopularNowSectionWidget extends StatelessWidget {
   final List<ProductModel> products;
   final void Function(ProductModel)? onProductTap;
   final void Function(ProductModel)? onWishlistToggle;
+  final void Function(ProductModel)? onAddToCart;
   final VoidCallback? onSeeAllPressed;
 
-  const FeaturedSectionWidget({
+  const PopularNowSectionWidget({
     super.key,
-    this.products = ProductModel.sampleFeaturedProducts,
+    this.products = ProductModel.samplePopularProducts,
     this.onProductTap,
     this.onWishlistToggle,
+    this.onAddToCart,
     this.onSeeAllPressed,
   });
 
@@ -26,13 +28,13 @@ class FeaturedSectionWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: HomeSectionHeaderWidget(
-            title: 'Featured',
+            title: 'Popular Now',
             onActionPressed: onSeeAllPressed,
           ),
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 250,
+          height: 310,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             clipBehavior: Clip.none,
@@ -42,10 +44,14 @@ class FeaturedSectionWidget extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(width: 14),
             itemBuilder: (context, index) {
               final item = products[index];
-              return FeaturedProductCardWidget(
-                product: item,
-                onTap: () => onProductTap?.call(item),
-                onWishlistToggle: () => onWishlistToggle?.call(item),
+              return SizedBox(
+                width: 180,
+                child: PopularProductCardWidget(
+                  product: item,
+                  onTap: () => onProductTap?.call(item),
+                  onWishlistToggle: () => onWishlistToggle?.call(item),
+                  onAddToCart: () => onAddToCart?.call(item),
+                ),
               );
             },
           ),

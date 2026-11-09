@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:storey_app/core/network/supabase_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/app/app.dart';
@@ -14,6 +16,7 @@ void main() async {
   await Supabase.initialize(
     url: Env.supabaseUrl,
     publishableKey: Env.supabasePublishableKey,
+    httpClient: kDebugMode ? SupabaseLogger() : null,
   );
 
   await DI.init();
@@ -33,3 +36,5 @@ void main() async {
     ),
   );
 }
+
+// npx supabase gen types --lang dart --remote | Out-File -FilePath lib/core/network/supabase_schema.g.dart -Encoding utf8

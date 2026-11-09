@@ -5,8 +5,6 @@ import '../../../../core/theme/color_manager.dart';
 import '../widgets/sign_in_footer_widget.dart';
 import '../widgets/sign_in_form_widget.dart';
 import '../widgets/sign_in_header_widget.dart';
-import '../widgets/social_login_buttons_widget.dart';
-import '../widgets/social_login_divider_widget.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
@@ -15,22 +13,6 @@ class SignInScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Forgot Password flow'),
-      ),
-    );
-  }
-
-  void _handleGoogleLogin(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Google Sign-in clicked'),
-      ),
-    );
-  }
-
-  void _handleAppleLogin(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Apple Sign-in clicked'),
       ),
     );
   }
@@ -57,13 +39,13 @@ class SignInScreen extends StatelessWidget {
                 onForgotPassword: () => _handleForgotPassword(context),
               ),
               const SizedBox(height: 28),
-              const SocialLoginDividerWidget(),
-              const SizedBox(height: 20),
-              SocialLoginButtonsWidget(
-                onGoogleTap: () => _handleGoogleLogin(context),
-                onAppleTap: () => _handleAppleLogin(context),
-              ),
-              const SizedBox(height: 32),
+              // const SocialLoginDividerWidget(),
+              // const SizedBox(height: 20),
+              // SocialLoginButtonsWidget(
+              //   onGoogleTap: () => _handleGoogleLogin(context),
+              //   onAppleTap: () => _handleAppleLogin(context),
+              // ),
+              // const SizedBox(height: 32),
               SignInFooterWidget(
                 onCreateAccountTap: () => _navigateToSignUp(context),
               ),

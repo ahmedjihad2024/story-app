@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/theme/fonts_manager.dart';
-import '../../domain/model/category_model.dart';
+import '../../../../../core/theme/fonts_manager.dart';
+import '../../../../../core/widgets/images/app_cached_image.dart';
+import '../../../domain/model/category_model.dart';
 
 class CategoryItemWidget extends StatelessWidget {
   final CategoryModel category;
@@ -33,11 +34,20 @@ class CategoryItemWidget extends StatelessWidget {
               ),
             ),
             alignment: Alignment.center,
-            child: SvgPicture.asset(
-              category.iconAsset,
-              width: 24,
-              height: 24,
-              fit: BoxFit.scaleDown,
+            child: AppCachedImage(
+              imageUrl: category.imageUrl,
+              width: 32,
+              height: 32,
+              fit: BoxFit.contain,
+              fallback: SvgPicture.asset(
+                'assets/svg/storey_logo.svg',
+                width: 26,
+                height: 26,
+                colorFilter: const ColorFilter.mode(
+                  Color(0xFF2563EB),
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 6),

@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/theme/color_manager.dart';
-import '../../../../core/theme/fonts_manager.dart';
-import '../../domain/model/promo_banner_model.dart';
+import '../../../../../core/theme/color_manager.dart';
+import '../../../../../core/theme/fonts_manager.dart';
+import '../../../domain/model/promo_banner_model.dart';
 
 class HeroPromoBannerWidget extends StatefulWidget {
   final List<PromoBannerModel> banners;
@@ -67,12 +67,19 @@ class _HeroPromoBannerWidgetState extends State<HeroPromoBannerWidget> {
               Positioned.fill(
                 child: Opacity(
                   opacity: 0.4,
-                  child: Image.asset(
-                    banner.imageAsset,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const SizedBox(),
-                  ),
+                  child: banner.imageAsset.startsWith('http')
+                      ? Image.network(
+                          banner.imageAsset,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const SizedBox(),
+                        )
+                      : Image.asset(
+                          banner.imageAsset,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const SizedBox(),
+                        ),
                 ),
               ),
               Positioned.fill(

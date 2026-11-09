@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../core/theme/color_manager.dart';
-import '../../../../core/theme/fonts_manager.dart';
+import '../../../../../core/theme/color_manager.dart';
+import '../../../../../core/theme/fonts_manager.dart';
 
 class HomeSearchBarWidget extends StatelessWidget {
   final TextEditingController? controller;
