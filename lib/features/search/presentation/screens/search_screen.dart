@@ -117,7 +117,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               final product = state.products[index];
               return ProductGridCardWidget(
                 product: product,
-                onTap: () {},
+                onTap: () => context.pushNamed(
+                  Routes.productDetails,
+                  arguments: product,
+                ),
                 onWishlistToggle: () {},
                 onAddToCart: () {
                   ScaffoldMessenger.of(context).showSnackBar(

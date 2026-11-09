@@ -188,25 +188,32 @@ class PopularProductCardWidget extends StatelessWidget {
                   color: const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/svg/cart_add.svg',
-                      width: 14,
-                      height: 14,
+                alignment: Alignment.center,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/svg/cart_add.svg',
+                          width: 14,
+                          height: 14,
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Add to Cart',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            fontWeight: FontWeightM.semiBold,
+                            color: ColorM.primary,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Add to Cart',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        fontWeight: FontWeightM.semiBold,
-                        color: ColorM.primary,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
