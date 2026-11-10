@@ -37,7 +37,7 @@ extension ProductsRowMapper on ProductsRow {
       imageUrl: imageUrl,
       description: description,
       salesCount: salesCount,
-      isWishlisted: false,
+      isWishlisted: isFavorite,
     );
   }
 }

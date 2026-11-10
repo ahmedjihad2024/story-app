@@ -7,7 +7,7 @@ import '../model/auth_user_model.dart';
 abstract class AuthRepository {
   Future<Either<Failure, AuthUserModel>> login(LoginRequest request);
   Future<Either<Failure, AuthUserModel>> register(RegisterRequest request);
-  Future<void> signOut();
+  Future<Either<Failure, Unit>> signOut();
   AuthUserModel? getCurrentUser();
 }
 

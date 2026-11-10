@@ -33,8 +33,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> signOut() {
-    return _remoteDataSource.signOut();
+  Future<Either<Failure, Unit>> signOut() {
+    return fastHandler<void, Unit>(
+      request: _remoteDataSource.signOut,
+      mapper: (_) => unit,
+    );
   }
 
   @override
