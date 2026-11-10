@@ -26,10 +26,14 @@ class UpdateProfileAvatarPickerWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        GestureDetector(
-          onTap: enabled ? onPickTap : null,
-          behavior: HitTestBehavior.opaque,
-          child: Stack(
+        Semantics(
+          button: true,
+          enabled: enabled,
+          label: 'Change profile photo',
+          child: GestureDetector(
+            onTap: enabled ? onPickTap : null,
+            behavior: HitTestBehavior.opaque,
+            child: Stack(
             clipBehavior: Clip.none,
             children: [
               Container(
@@ -107,6 +111,7 @@ class UpdateProfileAvatarPickerWidget extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
         const SizedBox(height: 12),
         Row(

@@ -65,31 +65,41 @@ class ProfileHeaderWidget extends StatelessWidget {
               ),
             ),
             Positioned(
-              right: -4,
-              bottom: -4,
-              child: GestureDetector(
-                onTap: onEditAvatarTap,
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    color: ColorM.primary,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: ColorM.white, width: 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: ColorM.primary.withValues(alpha: 0.3),
-                        offset: const Offset(0, 2),
-                        blurRadius: 6,
+              right: -13,
+              bottom: -13,
+              child: Semantics(
+                button: true,
+                label: 'Edit profile photo',
+                child: GestureDetector(
+                  onTap: onEditAvatarTap,
+                  behavior: HitTestBehavior.opaque,
+                  child: SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Center(
+                      child: Container(
+                        width: 26,
+                        height: 26,
+                        decoration: BoxDecoration(
+                          color: ColorM.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: ColorM.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: ColorM.primary.withValues(alpha: 0.3),
+                              offset: const Offset(0, 2),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.camera_alt_rounded,
+                          size: 13,
+                          color: ColorM.white,
+                        ),
                       ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: const Icon(
-                    Icons.camera_alt_rounded,
-                    size: 13,
-                    color: ColorM.white,
+                    ),
                   ),
                 ),
               ),

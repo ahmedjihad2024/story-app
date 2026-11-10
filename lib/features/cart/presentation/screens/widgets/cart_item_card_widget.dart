@@ -50,6 +50,7 @@ class CartItemCardWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Text(
@@ -64,40 +65,35 @@ class CartItemCardWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    GestureDetector(
+                    _CartActionIconButton(
+                      semanticLabel: item.isInFavorites
+                          ? 'Remove ${item.name} from favorites'
+                          : 'Add ${item.name} to favorites',
                       onTap: onWishlistToggle,
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: SvgPicture.asset(
-                          'assets/svg/heart_wishlist.svg',
-                          width: 17,
-                          height: 17,
-                          colorFilter: ColorFilter.mode(
-                            item.isInFavorites
-                                ? ColorM.error
-                                : const Color(0xFF94A3B8),
-                            BlendMode.srcIn,
-                          ),
+                      child: SvgPicture.asset(
+                        'assets/svg/heart_wishlist.svg',
+                        width: 17,
+                        height: 17,
+                        colorFilter: ColorFilter.mode(
+                          item.isInFavorites
+                              ? ColorM.error
+                              : ColorM.textSecondary,
+                          BlendMode.srcIn,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
+                    const SizedBox(width: 8),
+                    _CartActionIconButton(
+                      semanticLabel: 'Remove ${item.name} from cart',
                       onTap: onRemove,
-                      behavior: HitTestBehavior.opaque,
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.delete_outline_rounded,
-                          size: 19,
-                          color: ColorM.textSecondary,
-                        ),
+                      child: const Icon(
+                        Icons.delete_outline_rounded,
+                        size: 19,
+                        color: ColorM.textSecondary,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
                 Text(
                   item.name,
                   maxLines: 2,
@@ -110,7 +106,7 @@ class CartItemCardWidget extends StatelessWidget {
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -137,7 +133,7 @@ class CartItemCardWidget extends StatelessWidget {
                                   style: TextStyle(
                                     fontFamily: FontsM.inter.name,
                                     fontSize: 12,
-                                    color: ColorM.textHint,
+                                    color: ColorM.textSecondary,
                                     decoration: TextDecoration.lineThrough,
                                   ),
                                 ),
@@ -244,7 +240,7 @@ class _QuantityStepper extends StatelessWidget {
     final canDecrement = count > 1;
 
     return Container(
-      height: 34,
+      height: 38,
       decoration: BoxDecoration(
         color: ColorM.background,
         borderRadius: BorderRadius.circular(11),
@@ -254,8 +250,9 @@ class _QuantityStepper extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _StepperIconButton(
+            semanticLabel: 'Decrease quantity',
             icon: Icons.remove_rounded,
-            color: canDecrement ? ColorM.textPrimary : ColorM.textHint,
+            color: canDecrement ? ColorM.textPrimary : ColorM.textSecondary,
             onTap: canDecrement ? onDecrement : null,
           ),
           Container(
@@ -272,6 +269,7 @@ class _QuantityStepper extends StatelessWidget {
             ),
           ),
           _StepperIconButton(
+            semanticLabel: 'Increase quantity',
             icon: Icons.add_rounded,
             color: ColorM.primary,
             onTap: onIncrement,
@@ -282,12 +280,47 @@ class _QuantityStepper extends StatelessWidget {
   }
 }
 
+class _CartActionIconButton extends StatelessWidget {
+  final String semanticLabel;
+  final VoidCallback onTap;
+  final Widget child;
+
+  const _CartActionIconButton({
+    required this.semanticLabel,
+    required this.onTap,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            width: 44,
+            height: 44,
+            child: Center(child: child),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _StepperIconButton extends StatelessWidget {
+  final String semanticLabel;
   final IconData icon;
   final Color color;
   final VoidCallback? onTap;
 
   const _StepperIconButton({
+    required this.semanticLabel,
     required this.icon,
     required this.color,
     this.onTap,
@@ -295,13 +328,18 @@ class _StepperIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: SizedBox(
-        width: 32,
-        height: 34,
-        child: Icon(icon, size: 17, color: color),
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: semanticLabel,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: SizedBox(
+          width: 38,
+          height: 38,
+          child: Icon(icon, size: 17, color: color),
+        ),
       ),
     );
   }

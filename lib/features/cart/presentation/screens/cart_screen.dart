@@ -247,6 +247,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             itemBuilder: (context, index) {
               final item = state.items[index];
               return CartItemCardWidget(
+                key: ValueKey(item.productId),
                 item: item,
                 onIncrement: () => _handleIncrement(item),
                 onDecrement: () => _handleDecrement(item),
