@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/extensions/navigation_extension.dart';
+import '../../../../core/network/failure_message.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/color_manager.dart';
 import '../../../../core/widgets/refresh/customized_smart_refresh.dart';
 import '../../../../core/widgets/state/state_render.dart';
+import '../../../home/domain/model/product_model.dart';
 import '../../domain/model/product_filter_type.dart';
 import '../riverpod/products_controller.dart';
 import '../riverpod/products_state.dart';
@@ -77,6 +79,32 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
     } else {
       _refreshController.loadNoData();
     }
+  }
+
+  Future<void> _handleAddToCart(ProductModel product) async {
+    final result = await ref
+        .read(productsControllerProvider(_args).notifier)
+        .addToCart(product);
+    if (result == null || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    result.fold(
+      (failure) => messenger.showSnackBar(
+        SnackBar(
+          content: Text(failure.message),
+          backgroundColor: ColorM.error,
+          duration: const Duration(seconds: 2),
+        ),
+      ),
+      (count) => messenger.showSnackBar(
+        SnackBar(
+          content: Text('Added ${product.title} to cart (Qty: $count)'),
+          backgroundColor: ColorM.success,
+          duration: const Duration(seconds: 1),
+        ),
+      ),
+    );
   }
 
   @override
@@ -226,15 +254,10 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                   Routes.productDetails,
                   arguments: product,
                 ),
-                onWishlistToggle: () {},
-                onAddToCart: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Added ${product.title} to cart'),
-                      duration: const Duration(seconds: 1),
-                    ),
-                  );
-                },
+                onWishlistToggle: () => ref
+                    .read(productsControllerProvider(_args).notifier)
+                    .toggleFavorite(product),
+                onAddToCart: () => _handleAddToCart(product),
               );
             },
           ),

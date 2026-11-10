@@ -35,7 +35,12 @@ class AppCachedImage extends StatelessWidget {
         (url.startsWith('http://') || url.startsWith('https://'));
 
     if (!isValidUrl) {
-      return _buildFallback(effectiveRadius);
+      return _AppCachedImageFallback(
+        radius: effectiveRadius,
+        width: width,
+        height: height,
+        fallback: fallback,
+      );
     }
 
     return ClipRRect(
@@ -59,12 +64,32 @@ class AppCachedImage extends StatelessWidget {
             ),
           ),
         ),
-        errorWidget: (context, _, __) => _buildFallback(effectiveRadius),
+        errorWidget: (context, _, __) => _AppCachedImageFallback(
+          radius: effectiveRadius,
+          width: width,
+          height: height,
+          fallback: fallback,
+        ),
       ),
     );
   }
+}
 
-  Widget _buildFallback(BorderRadius radius) {
+class _AppCachedImageFallback extends StatelessWidget {
+  final BorderRadius radius;
+  final double? width;
+  final double? height;
+  final Widget? fallback;
+
+  const _AppCachedImageFallback({
+    required this.radius,
+    this.width,
+    this.height,
+    this.fallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     if (fallback != null) return fallback!;
 
     return ClipRRect(

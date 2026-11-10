@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/failure_message.dart';
 import '../../../../core/theme/color_manager.dart';
 import '../../../home/domain/model/product_model.dart';
+import '../riverpod/product_details_controller.dart';
 import '../widgets/product_details_bottom_bar_widget.dart';
 import '../widgets/product_details_description_widget.dart';
 import '../widgets/product_details_header_widget.dart';
@@ -9,76 +12,77 @@ import '../widgets/product_details_price_widget.dart';
 import '../widgets/product_details_rating_widget.dart';
 import '../widgets/product_details_top_nav_widget.dart';
 
-class ProductDetailsScreen extends StatefulWidget {
+class ProductDetailsScreen extends ConsumerWidget {
   final ProductModel product;
 
-  const ProductDetailsScreen({
-    super.key,
-    required this.product,
-  });
+  const ProductDetailsScreen({super.key, required this.product});
 
-  @override
-  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
-}
-
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
-  late bool _isWishlisted;
-
-  @override
-  void initState() {
-    super.initState();
-    _isWishlisted = widget.product.isWishlisted;
+  void _handleWishlistToggle(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    ref
+        .read(productDetailsControllerProvider(product).notifier)
+        .toggleFavorite();
   }
 
-  void _handleWishlistToggle() {
-    setState(() {
-      _isWishlisted = !_isWishlisted;
-    });
+  void _handleShare(BuildContext context, ProductModel currentProduct) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          _isWishlisted ? 'Added to wishlist' : 'Removed from wishlist',
+        content: Text('Sharing ${currentProduct.title}'),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  Future<void> _handleAddToCart(
+    BuildContext context,
+    WidgetRef ref,
+    ProductModel currentProduct,
+  ) async {
+    final result = await ref
+        .read(productDetailsControllerProvider(product).notifier)
+        .addToCart();
+    if (result == null || !context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    result.fold(
+      (failure) => messenger.showSnackBar(
+        SnackBar(
+          content: Text(failure.message),
+          backgroundColor: ColorM.error,
+          duration: const Duration(seconds: 2),
         ),
-        duration: const Duration(seconds: 1),
       ),
-    );
-  }
-
-  void _handleShare() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Sharing ${widget.product.title}'),
-        duration: const Duration(seconds: 1),
-      ),
-    );
-  }
-
-  void _handleAddToCart() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Added ${widget.product.title} to cart'),
-        duration: const Duration(seconds: 1),
+      (count) => messenger.showSnackBar(
+        SnackBar(
+          content: Text('Added ${currentProduct.title} to cart (Qty: $count)'),
+          backgroundColor: ColorM.success,
+          duration: const Duration(seconds: 1),
+        ),
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
-    final product = widget.product;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(productDetailsControllerProvider(product));
+    final currentProduct = state.product;
 
     return Scaffold(
       backgroundColor: ColorM.white,
       bottomNavigationBar: ProductDetailsBottomBarWidget(
-        price: product.price,
-        onAddToCart: _handleAddToCart,
+        price: currentProduct.price,
+        onAddToCart: () => _handleAddToCart(context, ref, currentProduct),
       ),
       body: SafeArea(
         child: Column(
           children: [
             ProductDetailsTopNavWidget(
-              isWishlisted: _isWishlisted,
-              onWishlistToggle: _handleWishlistToggle,
-              onShare: _handleShare,
+              isWishlisted: state.isWishlisted,
+              onWishlistToggle: () => _handleWishlistToggle(context, ref),
+              onShare: () => _handleShare(context, currentProduct),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -87,8 +91,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ProductDetailsImageWidget(
-                      imageUrl: product.imageUrl,
-                      imageAsset: product.imageAsset,
+                      imageUrl: currentProduct.imageUrl,
+                      imageAsset: currentProduct.imageAsset,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -96,19 +100,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ProductDetailsHeaderWidget(
-                            brand: product.brand,
-                            title: product.title,
-                            discountPercentage: product.discountPercentage,
+                            brand: currentProduct.brand,
+                            title: currentProduct.title,
+                            discountPercentage:
+                                currentProduct.discountPercentage,
                           ),
                           const SizedBox(height: 12),
                           ProductDetailsRatingWidget(
-                            rating: product.rating,
+                            rating: currentProduct.rating,
                           ),
                           const SizedBox(height: 16),
                           ProductDetailsPriceWidget(
-                            price: product.price,
-                            originalPrice: product.originalPrice,
-                            discountPercentage: product.discountPercentage,
+                            price: currentProduct.price,
+                            originalPrice: currentProduct.originalPrice,
+                            discountPercentage:
+                                currentProduct.discountPercentage,
                           ),
                           const SizedBox(height: 24),
                           const Divider(
@@ -118,7 +124,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           const SizedBox(height: 20),
                           ProductDetailsDescriptionWidget(
-                            description: product.description,
+                            description: currentProduct.description,
                           ),
                           const SizedBox(height: 32),
                         ],
@@ -134,4 +140,3 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 }
-

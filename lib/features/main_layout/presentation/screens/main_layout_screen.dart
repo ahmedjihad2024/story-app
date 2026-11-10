@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../home/presentation/screens/home_tab.dart';
 import '../../../home/presentation/screens/widgets/home_bottom_nav_bar_widget.dart';
+import '../../../profile/presentation/screens/profile_tab.dart';
 import '../riverpod/layout_controller.dart';
-import 'profile_placeholder_screen.dart';
 
 class MainLayoutScreen extends ConsumerWidget {
   const MainLayoutScreen({super.key});
@@ -20,14 +20,6 @@ class MainLayoutScreen extends ConsumerWidget {
       bottomNavigationBar: HomeBottomNavBarWidget(
         currentIndex: currentIndex,
         onTabSelected: controller.setNavIndex,
-        onAddPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Add Item pressed'),
-              duration: Duration(seconds: 1),
-            ),
-          );
-        },
       ),
       body: SafeArea(
         bottom: false,
@@ -37,7 +29,7 @@ class MainLayoutScreen extends ConsumerWidget {
           onPageChanged: controller.setNavIndex,
           children: const [
             HomeTab(),
-            ProfilePlaceholderScreen(),
+            ProfileTab(),
           ],
         ),
       ),

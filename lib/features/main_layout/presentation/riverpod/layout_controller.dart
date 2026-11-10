@@ -18,8 +18,14 @@ class LayoutController extends Notifier<LayoutState> {
     state = state.copyWith(currentNavIndex: index);
     pageController.jumpToPage(index);
   }
+
+  void reset() {
+    state = const LayoutState();
+  }
 }
 
 final layoutControllerProvider =
-    NotifierProvider<LayoutController, LayoutState>(LayoutController.new);
+    NotifierProvider.autoDispose<LayoutController, LayoutState>(
+      LayoutController.new,
+    );
 

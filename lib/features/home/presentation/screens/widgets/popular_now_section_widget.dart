@@ -12,7 +12,7 @@ class PopularNowSectionWidget extends StatelessWidget {
 
   const PopularNowSectionWidget({
     super.key,
-    this.products = ProductModel.samplePopularProducts,
+    required this.products,
     this.onProductTap,
     this.onWishlistToggle,
     this.onAddToCart,

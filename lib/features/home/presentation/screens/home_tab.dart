@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/extensions/navigation_extension.dart';
+import '../../../../core/network/failure_message.dart';
 import '../../../../core/routing/routes.dart';
+import '../../../../core/theme/color_manager.dart';
 import '../../../../core/widgets/refresh/customized_smart_refresh.dart';
 import '../../../../core/widgets/state/state_render.dart';
 import '../../../products/domain/model/product_filter_type.dart';
@@ -58,6 +60,14 @@ class _HomeTabState extends ConsumerState<HomeTab>
     context.pushNamed(Routes.search);
   }
 
+  void _handleFavoritesTap() {
+    context.pushNamed(Routes.favorites);
+  }
+
+  void _handleCartTap() {
+    context.pushNamed(Routes.cart);
+  }
+
   void _handleCategorySelected(CategoryModel category) {
     context.pushNamed(
       Routes.products,
@@ -102,11 +112,32 @@ class _HomeTabState extends ConsumerState<HomeTab>
     context.pushNamed(Routes.productDetails, arguments: product);
   }
 
-  void _handleAddToCart(ProductModel product) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Added ${product.title} to cart'),
-        duration: const Duration(seconds: 1),
+  void _handleWishlistToggle(ProductModel product) {
+    ref.read(homeControllerProvider.notifier).toggleFavorite(product);
+  }
+
+  Future<void> _handleAddToCart(ProductModel product) async {
+    final result = await ref
+        .read(homeControllerProvider.notifier)
+        .addToCart(product);
+    if (result == null || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    result.fold(
+      (failure) => messenger.showSnackBar(
+        SnackBar(
+          content: Text(failure.message),
+          backgroundColor: ColorM.error,
+          duration: const Duration(seconds: 2),
+        ),
+      ),
+      (count) => messenger.showSnackBar(
+        SnackBar(
+          content: Text('Added ${product.title} to cart (Qty: $count)'),
+          backgroundColor: ColorM.success,
+          duration: const Duration(seconds: 1),
+        ),
       ),
     );
   }
@@ -139,11 +170,14 @@ class _HomeTabState extends ConsumerState<HomeTab>
         refreshController: _refreshController,
         onRefresh: _handleRefresh,
         onSearchTap: _handleSearchTap,
+        onFavoritesTap: _handleFavoritesTap,
+        onCartTap: _handleCartTap,
         onCategorySelected: _handleCategorySelected,
         onFeaturedSeeAll: _handleFeaturedSeeAll,
         onPopularSeeAll: _handlePopularSeeAll,
         onShopNowPressed: _handleShopNowPressed,
         onProductTap: _handleProductTapped,
+        onWishlistToggle: _handleWishlistToggle,
         onAddToCart: _handleAddToCart,
       ),
     );
@@ -192,11 +226,14 @@ class _HomeContent extends StatelessWidget {
     required this.refreshController,
     required this.onRefresh,
     required this.onSearchTap,
+    required this.onFavoritesTap,
+    required this.onCartTap,
     required this.onCategorySelected,
     required this.onFeaturedSeeAll,
     required this.onPopularSeeAll,
     required this.onShopNowPressed,
     required this.onProductTap,
+    required this.onWishlistToggle,
     required this.onAddToCart,
   });
 
@@ -204,11 +241,14 @@ class _HomeContent extends StatelessWidget {
   final RefreshController refreshController;
   final Future<void> Function() onRefresh;
   final VoidCallback onSearchTap;
+  final VoidCallback onFavoritesTap;
+  final VoidCallback onCartTap;
   final void Function(CategoryModel) onCategorySelected;
   final VoidCallback onFeaturedSeeAll;
   final VoidCallback onPopularSeeAll;
   final void Function(PromoBannerModel) onShopNowPressed;
   final void Function(ProductModel) onProductTap;
+  final void Function(ProductModel) onWishlistToggle;
   final void Function(ProductModel) onAddToCart;
 
   @override
@@ -232,9 +272,9 @@ class _HomeContent extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: HomeAppBarWidget(
-                  onCartPressed: () {},
+                  onFavoritesPressed: onFavoritesTap,
+                  onCartPressed: onCartTap,
                   onProfilePressed: () {},
-                  onNotificationsPressed: () {},
                 ),
               ),
               const SizedBox(height: 16),
@@ -261,7 +301,7 @@ class _HomeContent extends StatelessWidget {
               if (data.featuredProducts.isNotEmpty)
                 FeaturedSectionWidget(
                   products: data.featuredProducts,
-                  onWishlistToggle: (_) {},
+                  onWishlistToggle: onWishlistToggle,
                   onProductTap: onProductTap,
                   onSeeAllPressed: onFeaturedSeeAll,
                 ),
@@ -269,7 +309,7 @@ class _HomeContent extends StatelessWidget {
               if (data.popularProducts.isNotEmpty)
                 PopularNowSectionWidget(
                   products: data.popularProducts,
-                  onWishlistToggle: (_) {},
+                  onWishlistToggle: onWishlistToggle,
                   onAddToCart: onAddToCart,
                   onProductTap: onProductTap,
                   onSeeAllPressed: onPopularSeeAll,

@@ -6,15 +6,15 @@ import 'home_action_icon_button_widget.dart';
 import 'home_notification_button_widget.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
+  final VoidCallback? onFavoritesPressed;
   final VoidCallback? onCartPressed;
   final VoidCallback? onProfilePressed;
-  final VoidCallback? onNotificationsPressed;
 
   const HomeAppBarWidget({
     super.key,
+    this.onFavoritesPressed,
     this.onCartPressed,
     this.onProfilePressed,
-    this.onNotificationsPressed,
   });
 
   @override
@@ -55,6 +55,19 @@ class HomeAppBarWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             HomeActionIconButtonWidget(
+              onTap: onFavoritesPressed,
+              child: SvgPicture.asset(
+                'assets/svg/heart_wishlist.svg',
+                width: 20,
+                height: 20,
+                colorFilter: const ColorFilter.mode(
+                  ColorM.textPrimary,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            HomeActionIconButtonWidget(
               onTap: onCartPressed,
               child: SvgPicture.asset(
                 'assets/svg/shopping_bag.svg',
@@ -69,25 +82,11 @@ class HomeAppBarWidget extends StatelessWidget {
             const SizedBox(width: 10),
             HomeActionIconButtonWidget(
               onTap: onProfilePressed,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.asset(
-                  'assets/images/user_avatar.png',
-                  width: 38,
-                  height: 38,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.person,
-                    size: 22,
-                    color: ColorM.textSecondary,
-                  ),
-                ),
+              child: const Icon(
+                Icons.person_outline_rounded,
+                size: 20,
+                color: ColorM.textPrimary,
               ),
-            ),
-            const SizedBox(width: 10),
-            HomeNotificationButtonWidget(
-              count: 2,
-              onTap: onNotificationsPressed,
             ),
           ],
         ),

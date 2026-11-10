@@ -1,5 +1,12 @@
 import 'dart:async';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:storey_app/core/events/app_event_bus.dart';
+import 'package:storey_app/core/events/event_bus_mixin.dart';
+import 'package:storey_app/core/network/error_handler/failure.dart';
+import 'package:storey_app/core/shared/riverpod/cart/cart_controller.dart';
+import 'package:storey_app/core/shared/riverpod/favorite/favorite_controller.dart';
+import 'package:storey_app/features/home/domain/model/product_model.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../core/enums/req_state.dart';
 import '../../../../core/network/failure_message.dart';
@@ -7,16 +14,64 @@ import '../../data/request/search_products_request.dart';
 import '../../domain/model/search_filter_model.dart';
 import 'search_state.dart';
 
-class SearchController extends Notifier<SearchState> {
+class SearchController extends Notifier<SearchState> with EventBusMixin {
   Timer? _debounceTimer;
 
   @override
   SearchState build() {
+    subscribe<ProductFavoriteChanged>(_onFavoriteChanged);
     ref.onDispose(() {
       _debounceTimer?.cancel();
     });
     Future.microtask(search);
     return const SearchState();
+  }
+
+  void _onFavoriteChanged(ProductFavoriteChanged f) {
+    _setProductFavorite(f.id, f.isInFavorite);
+  }
+
+  void _setProductFavorite(String productId, bool isFavorite) {
+    var changed = false;
+    final products = state.products.map((p) {
+      if (p.id == productId && p.isWishlisted != isFavorite) {
+        changed = true;
+        return p.copyWith(isWishlisted: isFavorite);
+      }
+      return p;
+    }).toList();
+
+    if (!changed) return;
+    state = state.copyWith(products: products);
+  }
+
+  Future<void> toggleFavorite(ProductModel product) async {
+    final favoriteController = ref.read(favoriteControllerProvider.notifier);
+    if (favoriteController.isPending(product.id)) return;
+
+    final wasWishlisted = product.isWishlisted;
+    _setProductFavorite(product.id, !wasWishlisted);
+
+    final result = await favoriteController.toggleFavorite(
+      productId: product.id,
+      isCurrentlyFavorite: wasWishlisted,
+    );
+
+    if (!ref.mounted) return;
+
+    result.fold(
+      (_) => _setProductFavorite(product.id, wasWishlisted),
+      (_) {},
+    );
+  }
+
+  Future<Either<Failure, int>?> addToCart(
+    ProductModel product, {
+    int count = 1,
+  }) {
+    final cartController = ref.read(cartControllerProvider.notifier);
+    if (cartController.isPending(product.id)) return Future.value(null);
+    return cartController.addToCart(productId: product.id, count: count);
   }
 
   void onQueryChanged(String query) {
@@ -118,5 +173,5 @@ class SearchController extends Notifier<SearchState> {
 
 final searchControllerProvider =
     NotifierProvider.autoDispose<SearchController, SearchState>(
-  SearchController.new,
-);
+      SearchController.new,
+    );

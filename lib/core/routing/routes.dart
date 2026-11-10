@@ -4,9 +4,12 @@ enum Routes {
   signUp('sign-up'),
   home('home'),
   products('products'),
+  favorites('favorites'),
+  cart('cart'),
   search('search'),
   filter('filter'),
-  productDetails('product-details');
+  productDetails('product-details'),
+  updateProfile('update-profile');
 
   final String name;
   const Routes(this.name);

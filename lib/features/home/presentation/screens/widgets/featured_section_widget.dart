@@ -11,7 +11,7 @@ class FeaturedSectionWidget extends StatelessWidget {
 
   const FeaturedSectionWidget({
     super.key,
-    this.products = ProductModel.sampleFeaturedProducts,
+    required this.products,
     this.onProductTap,
     this.onWishlistToggle,
     this.onSeeAllPressed,
