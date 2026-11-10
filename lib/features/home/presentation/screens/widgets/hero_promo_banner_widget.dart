@@ -148,12 +148,11 @@ class _HeroPromoBannerWidgetState extends State<HeroPromoBannerWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        GestureDetector(
-                          onTap: () => widget.onShopNowPressed?.call(banner),
-                          behavior: HitTestBehavior.opaque,
+                        Semantics(
+                          button: true,
+                          label: '${banner.buttonText} ${banner.title}',
                           child: Container(
-                            height: 32,
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            height: 36,
                             decoration: BoxDecoration(
                               color: ColorM.white,
                               borderRadius: BorderRadius.circular(9999),
@@ -165,29 +164,42 @@ class _HeroPromoBannerWidgetState extends State<HeroPromoBannerWidget> {
                                 ),
                               ],
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  banner.buttonText,
-                                  style: const TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 12,
-                                    fontWeight: FontWeightM.semiBold,
-                                    color: Color(0xFF0F172A),
+                            child: Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(9999),
+                              child: InkWell(
+                                onTap: () => widget.onShopNowPressed?.call(banner),
+                                borderRadius: BorderRadius.circular(9999),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        banner.buttonText,
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 12,
+                                          fontWeight: FontWeightM.semiBold,
+                                          color: Color(0xFF0F172A),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      SvgPicture.asset(
+                                        'assets/svg/arrow_right.svg',
+                                        width: 14,
+                                        height: 14,
+                                        colorFilter: const ColorFilter.mode(
+                                          Color(0xFF0F172A),
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 4),
-                                SvgPicture.asset(
-                                  'assets/svg/arrow_right.svg',
-                                  width: 14,
-                                  height: 14,
-                                  colorFilter: const ColorFilter.mode(
-                                    Color(0xFF0F172A),
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),

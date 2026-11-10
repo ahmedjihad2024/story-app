@@ -30,23 +30,34 @@ class HomeSectionHeaderWidget extends StatelessWidget {
             height: 28 / 18,
           ),
         ),
-        if(onActionPressed != null) GestureDetector(
-          onTap: onActionPressed,
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Text(
-              actionTitle,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 14,
-                fontWeight: FontWeightM.semiBold,
-                color: ColorM.primary,
-                height: 20 / 14,
+        if (onActionPressed != null)
+          Semantics(
+            button: true,
+            label: '$actionTitle $title',
+            child: GestureDetector(
+              onTap: onActionPressed,
+              behavior: HitTestBehavior.opaque,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: 44,
+                  minHeight: 44,
+                ),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    actionTitle,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: FontWeightM.semiBold,
+                      color: ColorM.primary,
+                      height: 20 / 14,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

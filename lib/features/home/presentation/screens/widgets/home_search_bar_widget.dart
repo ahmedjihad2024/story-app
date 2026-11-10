@@ -4,24 +4,20 @@ import '../../../../../core/theme/color_manager.dart';
 import '../../../../../core/theme/fonts_manager.dart';
 
 class HomeSearchBarWidget extends StatelessWidget {
-  final TextEditingController? controller;
-  final void Function(String)? onChanged;
   final VoidCallback? onTap;
-  final bool readOnly;
+  final String hintText;
 
   const HomeSearchBarWidget({
     super.key,
-    this.controller,
-    this.onChanged,
     this.onTap,
-    this.readOnly = false,
+    this.hintText = 'Search phones, laptops, more...',
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
+    return Semantics(
+      button: true,
+      label: 'Search products',
       child: Container(
         height: 46,
         decoration: BoxDecoration(
@@ -39,47 +35,37 @@ class HomeSearchBarWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: IgnorePointer(
-          ignoring: readOnly,
-          child: TextField(
-            controller: controller,
-            readOnly: readOnly,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          child: InkWell(
             onTap: onTap,
-            onChanged: onChanged,
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 14,
-              fontWeight: FontWeightM.regular,
-              color: ColorM.textPrimary,
-            ),
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 12,
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              hintText: 'Search phones, laptops, more...',
-              hintStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 14,
-                fontWeight: FontWeightM.regular,
-                color: ColorM.textHint,
-              ),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.only(left: 14, right: 10),
-                child: SvgPicture.asset(
-                  'assets/svg/search.svg',
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.scaleDown,
-                ),
-              ),
-              prefixIconConstraints: const BoxConstraints(
-                minWidth: 44,
-                minHeight: 44,
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg/search.svg',
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.scaleDown,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      hintText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeightM.regular,
+                        color: ColorM.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -88,4 +74,3 @@ class HomeSearchBarWidget extends StatelessWidget {
     );
   }
 }
-

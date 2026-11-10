@@ -49,39 +49,55 @@ class PopularProductCardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFEF2F2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    product.discountPercentage,
-                    style: const TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 10,
-                      fontWeight: FontWeightM.semiBold,
-                      color: Color(0xFFEF4444),
+                if (product.discountPercentage.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
                     ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: onWishlistToggle,
-                  behavior: HitTestBehavior.opaque,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: SvgPicture.asset(
-                      'assets/svg/heart_wishlist.svg',
-                      width: 16,
-                      height: 16,
-                      colorFilter: ColorFilter.mode(
-                        product.isWishlisted
-                            ? ColorM.error
-                            : const Color(0xFF94A3B8),
-                        BlendMode.srcIn,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEF2F2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      product.discountPercentage,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 10,
+                        fontWeight: FontWeightM.semiBold,
+                        color: Color(0xFFEF4444),
+                      ),
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
+                Semantics(
+                  button: true,
+                  label: product.isWishlisted
+                      ? 'Remove ${product.title} from favorites'
+                      : 'Add ${product.title} to favorites',
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      onTap: onWishlistToggle,
+                      borderRadius: BorderRadius.circular(10),
+                      child: SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/svg/heart_wishlist.svg',
+                            width: 16,
+                            height: 16,
+                            colorFilter: ColorFilter.mode(
+                              product.isWishlisted
+                                  ? ColorM.error
+                                  : ColorM.textSecondary,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -107,7 +123,7 @@ class PopularProductCardWidget extends StatelessWidget {
                 fontFamily: 'Inter',
                 fontSize: 11,
                 fontWeight: FontWeightM.regular,
-                color: Color(0xFF94A3B8),
+                color: ColorM.textSecondary,
               ),
             ),
             const SizedBox(height: 2),
@@ -170,7 +186,7 @@ class PopularProductCardWidget extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontSize: 10,
                     fontWeight: FontWeightM.regular,
-                    color: Color(0xFF94A3B8),
+                    color: ColorM.textSecondary,
                     decoration: TextDecoration.lineThrough,
                   ),
                 ),
@@ -178,40 +194,44 @@ class PopularProductCardWidget extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             // Add to Cart Button
-            GestureDetector(
-              onTap: onAddToCart,
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                height: 32,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFF6FF),
+            Semantics(
+              button: true,
+              label: 'Add ${product.title} to cart',
+              child: Material(
+                color: const Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  onTap: onAddToCart,
                   borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/svg/cart_add.svg',
-                          width: 14,
-                          height: 14,
+                  child: Container(
+                    height: 38,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/svg/cart_add.svg',
+                              width: 14,
+                              height: 14,
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              'Add to Cart',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 12,
+                                fontWeight: FontWeightM.semiBold,
+                                color: ColorM.primary,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 6),
-                        const Text(
-                          'Add to Cart',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            fontWeight: FontWeightM.semiBold,
-                            color: ColorM.primary,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

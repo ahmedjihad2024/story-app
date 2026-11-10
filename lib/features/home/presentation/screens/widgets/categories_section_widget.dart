@@ -41,6 +41,7 @@ class CategoriesSectionWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final cat = categories[index];
               return SizedBox(
+                key: ValueKey(cat.id),
                 width: 68,
                 child: CategoryItemWidget(
                   category: cat,

@@ -43,6 +43,7 @@ class FeaturedSectionWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = products[index];
               return FeaturedProductCardWidget(
+                key: ValueKey(item.id),
                 product: item,
                 onTap: () => onProductTap?.call(item),
                 onWishlistToggle: () => onWishlistToggle?.call(item),

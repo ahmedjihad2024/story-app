@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../core/theme/color_manager.dart';
 import '../../../../../core/theme/fonts_manager.dart';
 import 'home_action_icon_button_widget.dart';
-import 'home_notification_button_widget.dart';
 
 class HomeAppBarWidget extends StatelessWidget {
   final VoidCallback? onFavoritesPressed;
@@ -56,6 +55,7 @@ class HomeAppBarWidget extends StatelessWidget {
           children: [
             HomeActionIconButtonWidget(
               onTap: onFavoritesPressed,
+              semanticLabel: 'Favorites',
               child: SvgPicture.asset(
                 'assets/svg/heart_wishlist.svg',
                 width: 20,
@@ -69,6 +69,7 @@ class HomeAppBarWidget extends StatelessWidget {
             const SizedBox(width: 10),
             HomeActionIconButtonWidget(
               onTap: onCartPressed,
+              semanticLabel: 'Shopping cart',
               child: SvgPicture.asset(
                 'assets/svg/shopping_bag.svg',
                 width: 20,
@@ -82,6 +83,7 @@ class HomeAppBarWidget extends StatelessWidget {
             const SizedBox(width: 10),
             HomeActionIconButtonWidget(
               onTap: onProfilePressed,
+              semanticLabel: 'Profile',
               child: const Icon(
                 Icons.person_outline_rounded,
                 size: 20,

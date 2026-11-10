@@ -16,10 +16,13 @@ class CategoryItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
+    return Semantics(
+      button: true,
+      label: category.name,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
@@ -68,6 +71,7 @@ class CategoryItemWidget extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

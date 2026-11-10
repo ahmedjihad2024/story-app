@@ -45,6 +45,7 @@ class PopularNowSectionWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = products[index];
               return SizedBox(
+                key: ValueKey(item.id),
                 width: 180,
                 child: PopularProductCardWidget(
                   product: item,
