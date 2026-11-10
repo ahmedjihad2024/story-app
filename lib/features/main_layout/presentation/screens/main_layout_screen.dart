@@ -17,23 +17,37 @@ class MainLayoutScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      bottomNavigationBar: HomeBottomNavBarWidget(
-        currentIndex: currentIndex,
-        onTabSelected: controller.setNavIndex,
-      ),
-      body: SafeArea(
-        bottom: false,
-        child: PageView(
-          controller: controller.pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          onPageChanged: controller.setNavIndex,
-          children: const [
-            HomeTab(),
-            ProfileTab(),
-          ],
-        ),
+      body: Stack(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: PageView(
+              controller: controller.pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: controller.setNavIndex,
+              children: const [
+                HomeTab(),
+                ProfileTab(),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 24,
+            right: 24,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: HomeBottomNavBarWidget(
+                  currentIndex: currentIndex,
+                  onTabSelected: controller.setNavIndex,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-

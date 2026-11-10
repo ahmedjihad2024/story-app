@@ -139,7 +139,12 @@ class _ProfileContent extends StatelessWidget {
         parent: AlwaysScrollableScrollPhysics(),
       ),
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+        padding: EdgeInsets.fromLTRB(
+          20,
+          16,
+          20,
+          MediaQuery.paddingOf(context).bottom + 104,
+        ),
         physics: const BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),

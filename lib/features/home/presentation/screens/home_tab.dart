@@ -274,14 +274,12 @@ class _HomeContent extends StatelessWidget {
                 child: HomeAppBarWidget(
                   onFavoritesPressed: onFavoritesTap,
                   onCartPressed: onCartTap,
-                  onProfilePressed: () {},
                 ),
               ),
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: HomeSearchBarWidget(
-                  readOnly: true,
                   onTap: onSearchTap,
                 ),
               ),
@@ -314,7 +312,7 @@ class _HomeContent extends StatelessWidget {
                   onProductTap: onProductTap,
                   onSeeAllPressed: onPopularSeeAll,
                 ),
-              const SizedBox(height: 100),
+              SizedBox(height: MediaQuery.paddingOf(context).bottom + 104),
             ]),
           ),
         ],
