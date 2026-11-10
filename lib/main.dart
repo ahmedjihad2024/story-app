@@ -38,3 +38,5 @@ void main() async {
 }
 
 // npx supabase gen types --lang dart --remote | Out-File -FilePath lib/core/network/supabase_schema.g.dart -Encoding utf8
+// npx supabase@2 gen types --lang dart --project-id bjqpzxhmunhkixpcirda > lib\core\network\supabase_schema.g.dart -Encoding utf8
+// npx -y supabase@2.122.1 gen types --lang dart --project-id bjqpzxhmunhkixpcirda --schema public | Out-File -FilePath lib\core\network\supabase_schema.g.dart -Encoding utf8
