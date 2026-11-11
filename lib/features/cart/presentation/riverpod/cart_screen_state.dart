@@ -1,14 +1,16 @@
 import '../../../../core/enums/req_state.dart';
-import '../../../../core/shared/features/cart/domain/model/cart_item_model.dart';
+import '../../domain/model/cart_item_model.dart';
 
 class CartScreenState {
   final ReqState reqState;
   final List<CartItemModel> items;
+  final bool isCheckingOut;
   final String? errorMessage;
 
   const CartScreenState({
     this.reqState = ReqState.idle,
     this.items = const [],
+    this.isCheckingOut = false,
     this.errorMessage,
   });
 
@@ -31,11 +33,13 @@ class CartScreenState {
   CartScreenState copyWith({
     ReqState? reqState,
     List<CartItemModel>? items,
+    bool? isCheckingOut,
     String? errorMessage,
   }) {
     return CartScreenState(
       reqState: reqState ?? this.reqState,
       items: items ?? this.items,
+      isCheckingOut: isCheckingOut ?? this.isCheckingOut,
       errorMessage: errorMessage,
     );
   }

@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:storey_app/core/network/error_handler/failure.dart';
-import '../repository/cart_repository.dart';
+import '../repository/cart_screen_repository.dart';
 
 class ClearCartUseCase {
-  final CartRepository _repository;
+  final CartScreenRepository _repository;
 
   const ClearCartUseCase(this._repository);
 

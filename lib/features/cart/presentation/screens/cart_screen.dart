@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/extensions/navigation_extension.dart';
 import '../../../../core/network/failure_message.dart';
 import '../../../../core/routing/routes.dart';
-import '../../../../core/shared/features/cart/domain/model/cart_item_model.dart';
+import '../../domain/model/cart_item_model.dart';
 import '../../../../core/theme/color_manager.dart';
 import '../../../../core/theme/fonts_manager.dart';
 import '../../../../core/widgets/refresh/customized_smart_refresh.dart';
@@ -45,14 +45,18 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     }
   }
 
-  void _showErrorSnackBar(String message) {
+  void _showSnackBar(
+    String message, {
+    Color backgroundColor = ColorM.error,
+    Duration duration = const Duration(seconds: 2),
+  }) {
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: ColorM.error,
-        duration: const Duration(seconds: 2),
+        backgroundColor: backgroundColor,
+        duration: duration,
       ),
     );
   }
@@ -64,7 +68,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     if (result == null || !mounted) return;
 
     result.fold(
-      (failure) => _showErrorSnackBar(failure.message),
+      (failure) => _showSnackBar(failure.message),
       (_) {},
     );
   }
@@ -76,7 +80,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     if (result == null || !mounted) return;
 
     result.fold(
-      (failure) => _showErrorSnackBar(failure.message),
+      (failure) => _showSnackBar(failure.message),
       (_) {},
     );
   }
@@ -88,7 +92,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     if (result == null || !mounted) return;
 
     result.fold(
-      (failure) => _showErrorSnackBar(failure.message),
+      (failure) => _showSnackBar(failure.message),
       (_) {},
     );
   }
@@ -100,7 +104,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     if (result == null || !mounted) return;
 
     result.fold(
-      (failure) => _showErrorSnackBar(failure.message),
+      (failure) => _showSnackBar(failure.message),
       (_) {},
     );
   }
@@ -118,21 +122,23 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     if (result == null || !mounted) return;
 
     result.fold(
-      (failure) => _showErrorSnackBar(failure.message),
+      (failure) => _showSnackBar(failure.message),
       (_) {},
     );
   }
 
-  void _handleCheckout(CartScreenState state) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          'Checkout with ${state.totalUnits} ${state.totalUnits == 1 ? 'item' : 'items'} (\$${state.subtotal.toStringAsFixed(2)})',
-        ),
-        backgroundColor: ColorM.primary,
-        duration: const Duration(seconds: 2),
+  Future<void> _handleCheckout() async {
+    final result = await ref
+        .read(cartScreenControllerProvider.notifier)
+        .checkout();
+    if (result == null || !mounted) return;
+
+    result.fold(
+      (failure) => _showSnackBar(failure.message),
+      (order) => _showSnackBar(
+        'Order #${order.orderId} placed successfully!',
+        backgroundColor: ColorM.success,
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -153,7 +159,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       if (next.isSuccess &&
           next.errorMessage != null &&
           next.errorMessage != prev?.errorMessage) {
-        _showErrorSnackBar(next.errorMessage!);
+        _showSnackBar(next.errorMessage!);
       }
     });
 
@@ -186,7 +192,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         actions: [
           if (state.isSuccess && state.items.isNotEmpty)
             TextButton(
-              onPressed: _handleClearCart,
+              onPressed: state.isCheckingOut ? null : _handleClearCart,
               style: TextButton.styleFrom(
                 foregroundColor: ColorM.error,
               ),
@@ -214,7 +220,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               totalUnits: state.totalUnits,
               subtotal: state.subtotal,
               totalSavings: state.totalSavings,
-              onCheckout: () => _handleCheckout(state),
+              isCheckingOut: state.isCheckingOut,
+              onCheckout: _handleCheckout,
             )
           : null,
       body: StateRender(

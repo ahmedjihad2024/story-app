@@ -7,6 +7,7 @@ class CartSummaryBottomBarWidget extends StatelessWidget {
   final int totalUnits;
   final double subtotal;
   final double totalSavings;
+  final bool isCheckingOut;
   final VoidCallback onCheckout;
 
   const CartSummaryBottomBarWidget({
@@ -14,6 +15,7 @@ class CartSummaryBottomBarWidget extends StatelessWidget {
     required this.totalUnits,
     required this.subtotal,
     required this.totalSavings,
+    this.isCheckingOut = false,
     required this.onCheckout,
   });
 
@@ -95,6 +97,7 @@ class CartSummaryBottomBarWidget extends StatelessWidget {
               const SizedBox(height: 16),
               PrimaryButton(
                 title: 'Proceed to Checkout',
+                isLoading: isCheckingOut,
                 onPressed: onCheckout,
               ),
             ],

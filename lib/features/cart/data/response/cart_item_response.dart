@@ -21,7 +21,7 @@ class CartItemResponse {
     required this.price,
     required this.discountPercentage,
     required this.count,
-    required this.isInFavorites
+    required this.isInFavorites,
   });
 
   static CartItemResponse? fromPartialRow(PostgrestPartialRow<CartRow> row) {

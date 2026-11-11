@@ -104,6 +104,7 @@ class _ProfileTabState extends ConsumerState<ProfileTab>
         refreshController: _refreshController,
         onRefresh: _handleRefresh,
         onEditProfileTap: () => _openEditProfile(context, state),
+        onMyOrdersTap: () => context.pushNamed(Routes.orders),
         onSavedItemsTap: () => context.pushNamed(Routes.favorites),
         onSignOutTap: () => _handleSignOutTap(context, state),
       ),
@@ -116,6 +117,7 @@ class _ProfileContent extends StatelessWidget {
   final RefreshController refreshController;
   final Future<void> Function() onRefresh;
   final VoidCallback onEditProfileTap;
+  final VoidCallback onMyOrdersTap;
   final VoidCallback onSavedItemsTap;
   final VoidCallback onSignOutTap;
 
@@ -124,6 +126,7 @@ class _ProfileContent extends StatelessWidget {
     required this.refreshController,
     required this.onRefresh,
     required this.onEditProfileTap,
+    required this.onMyOrdersTap,
     required this.onSavedItemsTap,
     required this.onSignOutTap,
   });
@@ -177,7 +180,7 @@ class _ProfileContent extends StatelessWidget {
             iconBackgroundColor: ColorM.primary50,
             title: 'My Orders',
             subtitle: 'Track your orders',
-            onTap: () {},
+            onTap: onMyOrdersTap,
           ),
           const SizedBox(height: 10),
           ProfileMenuItemWidget(

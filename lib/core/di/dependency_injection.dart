@@ -7,11 +7,28 @@ import '../../features/auth/domain/repository/auth_repository.dart';
 import '../../features/auth/domain/usecase/login_usecase.dart';
 import '../../features/auth/domain/usecase/register_usecase.dart';
 import '../../features/auth/domain/usecase/sign_out_usecase.dart';
+import '../../features/cart/data/api/cart_screen_api_service.dart';
+import '../../features/cart/data/data_source/cart_screen_remote_data_source.dart';
+import '../../features/cart/data/repository/cart_screen_repository_impl.dart';
+import '../../features/cart/domain/repository/cart_screen_repository.dart';
+import '../../features/cart/domain/usecase/checkout_usecase.dart';
+import '../../features/cart/domain/usecase/clear_cart_usecase.dart';
+import '../../features/cart/domain/usecase/get_cart_usecase.dart';
 import '../../features/home/data/data_source/home_remote_data_source.dart';
 import '../../features/home/data/api/home_api_services.dart';
 import '../../features/home/data/repository/home_repository_impl.dart';
 import '../../features/home/domain/repository/home_repository.dart';
 import '../../features/home/domain/usecase/get_home_data_usecase.dart';
+import '../../features/order_details/data/api/order_details_api_services.dart';
+import '../../features/order_details/data/data_source/order_details_remote_data_source.dart';
+import '../../features/order_details/data/repository/order_details_repository_impl.dart';
+import '../../features/order_details/domain/repository/order_details_repository.dart';
+import '../../features/order_details/domain/usecase/get_order_by_id_usecase.dart';
+import '../../features/orders/data/api/orders_api_services.dart';
+import '../../features/orders/data/data_source/orders_remote_data_source.dart';
+import '../../features/orders/data/repository/orders_repository_impl.dart';
+import '../../features/orders/domain/repository/orders_repository.dart';
+import '../../features/orders/domain/usecase/get_orders_usecase.dart';
 import '../../features/products/data/api/products_api_service.dart';
 import '../../features/products/data/data_source/products_remote_data_source.dart';
 import '../../features/products/data/repository/products_repository_impl.dart';
@@ -28,8 +45,6 @@ import '../shared/features/cart/data/datasource/cart_remote_data_source.dart';
 import '../shared/features/cart/data/repository/cart_repository_impl.dart';
 import '../shared/features/cart/domain/repository/cart_repository.dart';
 import '../shared/features/cart/domain/usecase/add_to_cart_usecase.dart';
-import '../shared/features/cart/domain/usecase/clear_cart_usecase.dart';
-import '../shared/features/cart/domain/usecase/get_cart_usecase.dart';
 import '../shared/features/cart/domain/usecase/remove_from_cart_usecase.dart';
 import '../shared/features/cart/domain/usecase/update_cart_item_count_usecase.dart';
 import '../shared/features/favorite/data/api/favorite_api_service.dart';
@@ -204,10 +219,6 @@ class DI {
     (ref) => CartRepositoryImpl(ref.read(cartRemoteDataSourceProvider)),
   );
 
-  static final getCartUseCaseProvider = Provider<GetCartUseCase>(
-    (ref) => GetCartUseCase(ref.read(cartRepositoryProvider)),
-  );
-
   static final addToCartUseCaseProvider = Provider<AddToCartUseCase>(
     (ref) => AddToCartUseCase(ref.read(cartRepositoryProvider)),
   );
@@ -221,8 +232,72 @@ class DI {
     (ref) => RemoveFromCartUseCase(ref.read(cartRepositoryProvider)),
   );
 
+  // --- Cart Screen Feature ---
+  static final cartScreenApiServiceProvider = Provider<CartScreenApiService>(
+    (ref) => CartScreenApiServiceImpl(ref.read(supabaseClientProvider)),
+  );
+
+  static final cartScreenRemoteDataSourceProvider =
+      Provider<CartScreenRemoteDataSource>(
+    (ref) =>
+        CartScreenRemoteDataSourceImpl(ref.read(cartScreenApiServiceProvider)),
+  );
+
+  static final cartScreenRepositoryProvider = Provider<CartScreenRepository>(
+    (ref) =>
+        CartScreenRepositoryImpl(ref.read(cartScreenRemoteDataSourceProvider)),
+  );
+
+  static final getCartUseCaseProvider = Provider<GetCartUseCase>(
+    (ref) => GetCartUseCase(ref.read(cartScreenRepositoryProvider)),
+  );
+
   static final clearCartUseCaseProvider = Provider<ClearCartUseCase>(
-    (ref) => ClearCartUseCase(ref.read(cartRepositoryProvider)),
+    (ref) => ClearCartUseCase(ref.read(cartScreenRepositoryProvider)),
+  );
+
+  static final checkoutUseCaseProvider = Provider<CheckoutUseCase>(
+    (ref) => CheckoutUseCase(ref.read(cartScreenRepositoryProvider)),
+  );
+
+  // --- Orders Feature ---
+  static final ordersApiServiceProvider = Provider<OrdersApiServices>(
+    (ref) => OrdersApiServicesImpl(ref.read(supabaseClientProvider)),
+  );
+
+  static final ordersRemoteDataSourceProvider = Provider<OrdersRemoteDataSource>(
+    (ref) => OrdersRemoteDataSourceImpl(ref.read(ordersApiServiceProvider)),
+  );
+
+  static final ordersRepositoryProvider = Provider<OrdersRepository>(
+    (ref) => OrdersRepositoryImpl(ref.read(ordersRemoteDataSourceProvider)),
+  );
+
+  static final getOrdersUseCaseProvider = Provider<GetOrdersUseCase>(
+    (ref) => GetOrdersUseCase(ref.read(ordersRepositoryProvider)),
+  );
+
+  // --- Order Details Feature ---
+  static final orderDetailsApiServiceProvider =
+      Provider<OrderDetailsApiServices>(
+    (ref) => OrderDetailsApiServicesImpl(ref.read(supabaseClientProvider)),
+  );
+
+  static final orderDetailsRemoteDataSourceProvider =
+      Provider<OrderDetailsRemoteDataSource>(
+    (ref) =>
+        OrderDetailsRemoteDataSourceImpl(ref.read(orderDetailsApiServiceProvider)),
+  );
+
+  static final orderDetailsRepositoryProvider =
+      Provider<OrderDetailsRepository>(
+    (ref) => OrderDetailsRepositoryImpl(
+      ref.read(orderDetailsRemoteDataSourceProvider),
+    ),
+  );
+
+  static final getOrderByIdUseCaseProvider = Provider<GetOrderByIdUseCase>(
+    (ref) => GetOrderByIdUseCase(ref.read(orderDetailsRepositoryProvider)),
   );
 
   /// Call this in your main.dart before runApp()
@@ -291,13 +366,46 @@ extension DICartExtension on DI {
   CartRemoteDataSource get cartRemoteDataSource =>
       DI.container.read(DI.cartRemoteDataSourceProvider);
   CartRepository get cartRepository => DI.container.read(DI.cartRepositoryProvider);
-  GetCartUseCase get getCartUseCase => DI.container.read(DI.getCartUseCaseProvider);
   AddToCartUseCase get addToCartUseCase =>
       DI.container.read(DI.addToCartUseCaseProvider);
   UpdateCartItemCountUseCase get updateCartItemCountUseCase =>
       DI.container.read(DI.updateCartItemCountUseCaseProvider);
   RemoveFromCartUseCase get removeFromCartUseCase =>
       DI.container.read(DI.removeFromCartUseCaseProvider);
+}
+
+extension DICartScreenExtension on DI {
+  CartScreenApiService get cartScreenApiService =>
+      DI.container.read(DI.cartScreenApiServiceProvider);
+  CartScreenRemoteDataSource get cartScreenRemoteDataSource =>
+      DI.container.read(DI.cartScreenRemoteDataSourceProvider);
+  CartScreenRepository get cartScreenRepository =>
+      DI.container.read(DI.cartScreenRepositoryProvider);
+  GetCartUseCase get getCartUseCase => DI.container.read(DI.getCartUseCaseProvider);
   ClearCartUseCase get clearCartUseCase =>
       DI.container.read(DI.clearCartUseCaseProvider);
+  CheckoutUseCase get checkoutUseCase =>
+      DI.container.read(DI.checkoutUseCaseProvider);
+}
+
+extension DIOrdersExtension on DI {
+  OrdersApiServices get ordersApiService =>
+      DI.container.read(DI.ordersApiServiceProvider);
+  OrdersRemoteDataSource get ordersRemoteDataSource =>
+      DI.container.read(DI.ordersRemoteDataSourceProvider);
+  OrdersRepository get ordersRepository =>
+      DI.container.read(DI.ordersRepositoryProvider);
+  GetOrdersUseCase get getOrdersUseCase =>
+      DI.container.read(DI.getOrdersUseCaseProvider);
+}
+
+extension DIOrderDetailsExtension on DI {
+  OrderDetailsApiServices get orderDetailsApiService =>
+      DI.container.read(DI.orderDetailsApiServiceProvider);
+  OrderDetailsRemoteDataSource get orderDetailsRemoteDataSource =>
+      DI.container.read(DI.orderDetailsRemoteDataSourceProvider);
+  OrderDetailsRepository get orderDetailsRepository =>
+      DI.container.read(DI.orderDetailsRepositoryProvider);
+  GetOrderByIdUseCase get getOrderByIdUseCase =>
+      DI.container.read(DI.getOrderByIdUseCaseProvider);
 }

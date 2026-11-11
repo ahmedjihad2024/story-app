@@ -1,5 +1,7 @@
 import '../../domain/model/cart_item_model.dart';
+import '../../domain/model/order_id_model.dart';
 import '../response/cart_item_response.dart';
+import '../response/order_id_response.dart';
 
 extension CartItemResponseMapper on CartItemResponse {
   CartItemModel toDomain() {
@@ -20,6 +22,12 @@ extension CartItemResponseMapper on CartItemResponse {
       count: count,
       isInFavorites: isInFavorites,
     );
+  }
+}
+
+extension OrderIdResponseMapper on OrderIdResponse {
+  OrderIdModel toDomain() {
+    return OrderIdModel(orderId: orderId);
   }
 }
 

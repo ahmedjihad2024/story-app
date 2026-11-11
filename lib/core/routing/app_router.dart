@@ -8,6 +8,8 @@ import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
 import '../../features/home/domain/model/product_model.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
+import '../../features/order_details/presentation/screens/order_details_screen.dart';
+import '../../features/orders/presentation/screens/orders_screen.dart';
 import '../../features/product_details/presentation/screens/product_details_screen.dart';
 import '../../features/products/domain/model/product_filter_type.dart';
 import '../../features/products/presentation/screens/products_screen.dart';
@@ -123,6 +125,19 @@ final GoRouter appRouter = GoRouter(
       name: Routes.cart.name,
       path: Routes.cart.path,
       builder: (context, state) => const CartScreen(),
+    ),
+    GoRoute(
+      name: Routes.orders.name,
+      path: Routes.orders.path,
+      builder: (context, state) => const OrdersScreen(),
+    ),
+    GoRoute(
+      name: Routes.orderDetails.name,
+      path: Routes.orderDetails.path,
+      builder: (context, state) {
+        final orderId = state.extra is String ? state.extra as String : '';
+        return OrderDetailsScreen(orderId: orderId);
+      },
     ),
     GoRoute(
       name: Routes.search.name,

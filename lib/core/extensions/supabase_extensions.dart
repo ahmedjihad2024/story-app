@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 extension RowsParsing on Object? {
   List<T> toRows<T>(T Function(Map<String, dynamic>) from) {
     if (this is! List) return const [];
@@ -9,5 +11,15 @@ extension RowsParsing on Object? {
       }
     }
     return results;
+  }
+}
+
+extension SupabaseAuthUserExtension on SupabaseClient {
+  String requireUserId() {
+    final userId = auth.currentUser?.id;
+    if (userId == null) {
+      throw const AuthException('User not signed in.');
+    }
+    return userId;
   }
 }

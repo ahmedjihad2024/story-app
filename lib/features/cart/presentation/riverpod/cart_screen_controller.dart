@@ -7,7 +7,8 @@ import '../../../../core/events/app_event_bus.dart';
 import '../../../../core/events/event_bus_mixin.dart';
 import '../../../../core/network/error_handler/failure.dart';
 import '../../../../core/network/failure_message.dart';
-import '../../../../core/shared/features/cart/domain/model/cart_item_model.dart';
+import '../../domain/model/cart_item_model.dart';
+import '../../domain/model/order_id_model.dart';
 import '../../../../core/shared/features/favorite/domain/model/favorite_status.dart';
 import '../../../../core/shared/riverpod/cart/cart_controller.dart';
 import '../../../../core/shared/riverpod/favorite/favorite_controller.dart';
@@ -63,6 +64,8 @@ class CartScreenController extends Notifier<CartScreenState> with EventBusMixin 
   }
 
   Future<bool> loadCart({bool showLoading = true}) async {
+    if (state.isCheckingOut) return false;
+
     if (showLoading) {
       state = state.copyWith(
         reqState: ReqState.loading,
@@ -114,7 +117,9 @@ class CartScreenController extends Notifier<CartScreenState> with EventBusMixin 
     int targetCount,
   ) async {
     final cartController = ref.read(cartControllerProvider.notifier);
-    if (cartController.isPending(item.productId)) return null;
+    if (state.isCheckingOut || cartController.isPending(item.productId)) {
+      return null;
+    }
 
     final previousCount = item.count;
     _setItemCountLocally(item.productId, targetCount);
@@ -138,7 +143,9 @@ class CartScreenController extends Notifier<CartScreenState> with EventBusMixin 
 
   Future<Either<Failure, Unit>?> removeItem(CartItemModel item) async {
     final cartController = ref.read(cartControllerProvider.notifier);
-    if (cartController.isPending(item.productId)) return null;
+    if (state.isCheckingOut || cartController.isPending(item.productId)) {
+      return null;
+    }
 
     final previousItems = List<CartItemModel>.of(state.items);
     _removeItemLocally(item.productId);
@@ -157,7 +164,7 @@ class CartScreenController extends Notifier<CartScreenState> with EventBusMixin 
   }
 
   Future<Either<Failure, Unit>?> clearCart() async {
-    if (state.items.isEmpty) return null;
+    if (state.isCheckingOut || state.items.isEmpty) return null;
 
     final previousItems = List<CartItemModel>.of(state.items);
     state = state.copyWith(
@@ -166,7 +173,8 @@ class CartScreenController extends Notifier<CartScreenState> with EventBusMixin 
       errorMessage: null,
     );
 
-    final result = await ref.read(cartControllerProvider.notifier).clearCart();
+    final useCase = ref.read(DI.clearCartUseCaseProvider);
+    final result = await useCase();
     if (!ref.mounted) return null;
 
     result.fold(
@@ -174,9 +182,39 @@ class CartScreenController extends Notifier<CartScreenState> with EventBusMixin 
         reqState: ReqState.success,
         items: previousItems,
       ),
-      (_) {},
+      (_) => AppEventBus.instance.fire(const CartCleared()),
     );
     return result;
+  }
+
+  Future<Either<Failure, OrderIdModel>?> checkout() async {
+    if (state.isCheckingOut || state.items.isEmpty) return null;
+
+    state = state.copyWith(isCheckingOut: true, errorMessage: null);
+
+    final useCase = ref.read(DI.checkoutUseCaseProvider);
+    final result = await useCase();
+    if (!ref.mounted) return null;
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(
+          isCheckingOut: false,
+          errorMessage: null,
+        );
+        return Left(failure);
+      },
+      (order) {
+        state = state.copyWith(
+          reqState: ReqState.empty,
+          items: const [],
+          isCheckingOut: false,
+          errorMessage: null,
+        );
+        AppEventBus.instance.fire(const CartCleared());
+        return Right(order);
+      },
+    );
   }
 
   Future<Either<Failure, FavoriteStatus>?> toggleFavorite(

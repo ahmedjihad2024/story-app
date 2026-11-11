@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../../core/shared/features/cart/domain/model/cart_item_model.dart';
+import '../../../domain/model/cart_item_model.dart';
 import '../../../../../core/theme/color_manager.dart';
 import '../../../../../core/theme/fonts_manager.dart';
 import '../../../../../core/widgets/images/app_cached_image.dart';

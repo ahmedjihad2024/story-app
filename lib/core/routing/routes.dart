@@ -6,6 +6,8 @@ enum Routes {
   products('products'),
   favorites('favorites'),
   cart('cart'),
+  orders('orders'),
+  orderDetails('order-details'),
   search('search'),
   filter('filter'),
   productDetails('product-details'),

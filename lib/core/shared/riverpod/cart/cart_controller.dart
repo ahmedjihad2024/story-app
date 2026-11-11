@@ -59,14 +59,6 @@ class CartController extends Notifier<void> {
     );
   }
 
-  Future<Either<Failure, Unit>> clearCart() {
-    final useCase = ref.read(DI.clearCartUseCaseProvider);
-    return _execute(
-      useCase.call,
-      onSuccess: (_) => AppEventBus.instance.fire(const CartCleared()),
-    );
-  }
-
   void _emitProductChanged(String productId, int count) {
     AppEventBus.instance.fire(
       ProductCartChanged(productId: productId, count: count),
