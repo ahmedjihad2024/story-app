@@ -297,6 +297,7 @@ extension type const OrderedProductRow(Map<String, dynamic> _json)
   DateTime get createdAt =>
       postgresTimestamp.decode(_json['created_at'] as String);
   String get orderId => _json['order_id'] as String;
+  num get priceAtPurchase => _json['price_at_purchase'] as num;
   String get productId => _json['product_id'] as String;
 
   /// The row as decoded from the response.
@@ -314,6 +315,7 @@ extension type const OrderedProductInsert._(Map<String, dynamic> _json)
     required int count,
     DateTime? createdAt,
     required String orderId,
+    required num priceAtPurchase,
     required String productId,
   }) : this._({
          'count': count,
@@ -322,6 +324,7 @@ extension type const OrderedProductInsert._(Map<String, dynamic> _json)
            final value => postgresTimestamp.encode(value.toUtc()),
          },
          'order_id': orderId,
+         'price_at_purchase': priceAtPurchase,
          'product_id': productId,
        });
 }
@@ -335,6 +338,7 @@ extension type const OrderedProductUpdate._(Map<String, dynamic> _json)
     int? count,
     DateTime? createdAt,
     String? orderId,
+    num? priceAtPurchase,
     String? productId,
   }) : this._({
          'count': ?count,
@@ -343,6 +347,7 @@ extension type const OrderedProductUpdate._(Map<String, dynamic> _json)
            final value => postgresTimestamp.encode(value.toUtc()),
          },
          'order_id': ?orderId,
+         'price_at_purchase': ?priceAtPurchase,
          'product_id': ?productId,
        });
 }
@@ -371,6 +376,9 @@ class OrderedProduct {
     fromJson: _dateTimeFromJson,
   );
   static const orderId = PostgrestColumn<OrderedProductRow, String>('order_id');
+  static const priceAtPurchase = PostgrestColumn<OrderedProductRow, num>(
+    'price_at_purchase',
+  );
   static const productId = PostgrestColumn<OrderedProductRow, String>(
     'product_id',
   );
@@ -691,6 +699,13 @@ class Products {
 /// that is the sole one and of type json or jsonb; call it through `client.rpc`
 /// instead
 extension DatabaseFunctions on PostgrestRpc {
+  /// Calls the `checkout_cod_order` function.
+  PostgrestTypedBuilder<String?> checkoutCodOrder() => value(
+    'checkout_cod_order',
+    fromJson: (json) => json as String?,
+    schema: 'public',
+  );
+
   /// Calls the `get_home_data` function.
   PostgrestTypedBuilder<Object?> getHomeData() => value(
     'get_home_data',
